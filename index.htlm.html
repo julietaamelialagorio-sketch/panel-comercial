@@ -1,0 +1,1669 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel Comercial · Julieta Lagorio · Teamclass</title>
+<style>
+  :root {
+    --navy: #0B2D5E; --blue: #1A5EA8; --sky: #2E86C1;
+    --yellow: #D4E600; --white: #fff; --off: #F5F8FC;
+    --gray: #607080; --dgray: #1E2D3D; --lgray: #D0DFF0;
+    --green: #27AE60; --orange: #E67E22; --red: #E74C3C;
+    --purple: #8E44AD;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: #EDF2F7; color: var(--dgray); }
+
+  /* TOP BAR */
+  .topbar {
+    background: var(--navy); color: white; padding: 14px 28px;
+    display: flex; justify-content: space-between; align-items: center;
+    border-bottom: 4px solid var(--yellow);
+  }
+  .topbar h1 { font-size: 18px; font-weight: 700; }
+  .topbar .sub { font-size: 12px; color: #9EC5E8; margin-top: 2px; }
+  .topbar .meta { text-align: right; font-size: 12px; color: #9EC5E8; }
+  .topbar .meta strong { color: var(--yellow); font-size: 14px; display: block; }
+
+  /* TABS */
+  .tabs { background: var(--navy); display: flex; gap: 2px; padding: 0 28px; }
+  .tab { padding: 10px 22px; cursor: pointer; font-size: 13px; color: #9EC5E8;
+         border-bottom: 3px solid transparent; font-weight: 500; transition: all .2s; }
+  .tab.active { color: white; border-bottom-color: var(--yellow); background: rgba(255,255,255,.06); }
+  .tab:hover { color: white; background: rgba(255,255,255,.04); }
+
+  /* MAIN */
+  .main { padding: 22px 28px; }
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* MONTH SELECTOR */
+  .month-bar {
+    background: white; border-radius: 12px; padding: 14px 18px;
+    display: flex; align-items: center; gap: 12px; margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.07);
+  }
+  .month-bar label { font-size: 13px; font-weight: 600; color: var(--navy); }
+  .month-btn {
+    padding: 6px 16px; border: 2px solid var(--lgray); border-radius: 20px;
+    cursor: pointer; font-size: 12px; font-weight: 600; background: white;
+    color: var(--gray); transition: all .2s;
+  }
+  .month-btn.active { background: var(--navy); color: white; border-color: var(--navy); }
+  .month-btn:hover:not(.active) { border-color: var(--blue); color: var(--blue); }
+
+  /* KPI CARDS ROW */
+  .kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-bottom: 22px; }
+  .kpi-card {
+    background: white; border-radius: 12px; padding: 18px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.07); border-top: 4px solid var(--blue);
+    position: relative; overflow: hidden;
+  }
+  .kpi-card.yellow { border-top-color: var(--yellow); }
+  .kpi-card.green  { border-top-color: var(--green); }
+  .kpi-card.orange { border-top-color: var(--orange); }
+  .kpi-card.red    { border-top-color: var(--red); }
+  .kpi-card.purple { border-top-color: var(--purple); }
+  .kpi-card .label { font-size: 11px; color: var(--gray); text-transform: uppercase; letter-spacing: .5px; font-weight: 600; margin-bottom: 6px; }
+  .kpi-card .value { font-size: 30px; font-weight: 800; color: var(--navy); line-height: 1; }
+  .kpi-card .meta  { font-size: 11px; color: var(--gray); margin-top: 6px; }
+  .kpi-card .badge { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 10px; display: inline-block; margin-top: 6px; }
+  .badge.ok   { background: #D5F5E3; color: #1E8449; }
+  .badge.warn { background: #FDEBD0; color: #CA6F1E; }
+  .badge.bad  { background: #FADBD8; color: #922B21; }
+  .badge.neu  { background: #EBF5FB; color: #1A5276; }
+  .kpi-card .progress-wrap { margin-top: 10px; background: #EDF2F7; border-radius: 6px; height: 6px; }
+  .kpi-card .progress-bar { height: 6px; border-radius: 6px; transition: width .6s ease; }
+
+  /* GRID 2COL */
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 22px; }
+  .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 18px; margin-bottom: 22px; }
+  @media(max-width:900px) { .grid2,.grid3 { grid-template-columns: 1fr; } }
+
+  /* PANEL CARD */
+  .panel {
+    background: white; border-radius: 12px; padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.07);
+  }
+  .panel h3 { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 14px;
+              text-transform: uppercase; letter-spacing: .5px; display: flex; align-items: center; gap: 8px; }
+  .panel h3 .dot { width: 8px; height: 8px; border-radius: 50%; }
+  .panel h3 .dot.blue   { background: var(--blue); }
+  .panel h3 .dot.yellow { background: var(--yellow); }
+  .panel h3 .dot.green  { background: var(--green); }
+  .panel h3 .dot.orange { background: var(--orange); }
+
+  /* TABLE */
+  table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  th { background: var(--off); color: var(--navy); font-weight: 700; padding: 8px 10px;
+       text-align: left; border-bottom: 2px solid var(--lgray); font-size: 11px; text-transform: uppercase; }
+  td { padding: 8px 10px; border-bottom: 1px solid #F0F4F8; vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #FAFCFF; }
+  .tag { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 700; }
+  .tag.si  { background: #D5F5E3; color: #1E8449; }
+  .tag.no  { background: #F9EBEA; color: #922B21; }
+  .tag.new { background: #D6EAF8; color: #1A5276; }
+  .tag.fact { background: #D5F5E3; color: #1E8449; }
+  .tag.fore { background: #FEF9E7; color: #9A7D0A; }
+  .tag.pend { background: #FDEBD0; color: #CA6F1E; }
+
+  /* CHART BAR */
+  .chart-wrap { display: flex; flex-direction: column; gap: 10px; }
+  .chart-row { display: flex; align-items: center; gap: 10px; }
+  .chart-label { width: 60px; font-size: 11px; color: var(--gray); text-align: right; flex-shrink: 0; }
+  .chart-bar-bg { flex: 1; background: #EDF2F7; border-radius: 6px; height: 22px; position: relative; }
+  .chart-bar-fill { height: 22px; border-radius: 6px; display: flex; align-items: center; padding: 0 8px; font-size: 11px; font-weight: 700; color: white; transition: width .8s ease; }
+  .chart-val { width: 80px; font-size: 11px; font-weight: 600; color: var(--navy); flex-shrink: 0; }
+  .chart-meta { width: 60px; font-size: 10px; color: var(--gray); flex-shrink: 0; }
+  .meta-line { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
+  .meta-line .dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+  .meta-line span { font-size: 11px; color: var(--gray); }
+  .meta-line strong { color: var(--navy); font-size: 12px; }
+
+  /* WEEKLY TRACKER */
+  .week-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; }
+  .week-box { background: var(--off); border-radius: 10px; padding: 12px; text-align: center; border: 2px solid transparent; }
+  .week-box.current { border-color: var(--blue); background: #EBF5FB; }
+  .week-box .wk { font-size: 10px; font-weight: 700; color: var(--gray); text-transform: uppercase; margin-bottom: 6px; }
+  .week-box .wnum { font-size: 22px; font-weight: 800; color: var(--navy); }
+  .week-box .wtot { font-size: 10px; color: var(--gray); }
+  .week-box .wbar { margin-top: 6px; background: #D0DFF0; border-radius: 4px; height: 4px; }
+  .week-box .wfill { height: 4px; border-radius: 4px; }
+
+  /* INPUT ROW */
+  .input-row { display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 16px; }
+  .input-group { display: flex; flex-direction: column; gap: 4px; }
+  .input-group label { font-size: 11px; font-weight: 600; color: var(--navy); }
+  .input-group input, .input-group select {
+    padding: 7px 10px; border: 2px solid var(--lgray); border-radius: 8px;
+    font-size: 13px; width: 180px; outline: none; transition: border .2s;
+  }
+  .input-group input:focus, .input-group select:focus { border-color: var(--blue); }
+  .btn {
+    padding: 8px 18px; border-radius: 8px; font-size: 13px; font-weight: 700;
+    cursor: pointer; border: none; transition: all .2s;
+  }
+  .btn-primary { background: var(--blue); color: white; }
+  .btn-primary:hover { background: var(--navy); }
+  .btn-danger  { background: #FADBD8; color: var(--red); }
+  .btn-danger:hover { background: var(--red); color: white; }
+  .btn-yellow  { background: var(--yellow); color: var(--navy); }
+  .btn-yellow:hover { background: #c4d400; }
+
+  /* ALERT */
+  .alert { padding: 10px 14px; border-radius: 8px; font-size: 12.5px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+  .alert.warn { background: #FDEBD0; border-left: 4px solid var(--orange); color: #784212; }
+  .alert.ok   { background: #D5F5E3; border-left: 4px solid var(--green);  color: #1A6633; }
+  .alert.info { background: #D6EAF8; border-left: 4px solid var(--blue);   color: #1A3E6F; }
+
+  /* PROSPECTO STATS */
+  .pros-stat { text-align: center; padding: 14px; background: var(--off); border-radius: 10px; }
+  .pros-stat .n { font-size: 28px; font-weight: 800; color: var(--navy); }
+  .pros-stat .l { font-size: 11px; color: var(--gray); font-weight: 600; margin-top: 2px; }
+
+  /* FUNNEL */
+  .funnel { display: flex; flex-direction: column; gap: 8px; }
+  .funnel-row { display: flex; align-items: center; gap: 12px; }
+  .funnel-label { width: 110px; font-size: 12px; color: var(--gray); text-align: right; }
+  .funnel-bar-wrap { flex: 1; background: #EDF2F7; border-radius: 6px; height: 30px; }
+  .funnel-fill { height: 30px; border-radius: 6px; display: flex; align-items: center; padding: 0 10px; color: white; font-weight: 700; font-size: 12px; }
+  .funnel-pct { width: 50px; font-size: 11px; color: var(--gray); }
+
+  /* FOOTER */
+  .footer { text-align: center; padding: 16px; font-size: 11px; color: var(--gray); margin-top: 10px; }
+
+  /* PRINT */
+  @media print { .tabs, .month-bar, .input-row, .btn { display: none !important; } .section { display: block !important; } }
+
+  /* RESPONSIVE TABLE */
+  .table-wrap { overflow-x: auto; }
+
+  .semaforo { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 4px; }
+  .semaforo.g { background: var(--green); }
+  .semaforo.y { background: var(--yellow); border: 1px solid #aaa; }
+  .semaforo.r { background: var(--red); }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div>
+    <div class="h1" style="font-size:18px;font-weight:800;color:white;">📊 Panel Comercial · Julieta Lagorio</div>
+    <div class="sub">Teamclass · Gestión Comercial 2026</div>
+  </div>
+  <div class="meta" style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
+    <strong id="fecha-hoy"></strong>
+    <span>Meta mensual: $25.000.000 · KPIs: 20 reuniones · 10 propuestas · 5 cierres</span>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <span id="save-status" style="font-size:11px;"></span>
+      <button onclick="loadFromSheets()" style="padding:5px 12px;background:#2E86C1;color:white;border:none;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;">
+        🔄 Cargar desde Sheets
+      </button>
+      <button onclick="saveToSheets()" style="padding:5px 12px;background:#D4E600;color:#0B2D5E;border:none;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;">
+        💾 Guardar en Sheets
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- TABS -->
+<div class="tabs">
+  <div class="tab active" onclick="showTab('resumen')">🏠 Resumen</div>
+  <div class="tab" onclick="showTab('reuniones')">📅 Reuniones</div>
+  <div class="tab" onclick="showTab('facturacion')">💰 Facturación</div>
+  <div class="tab" onclick="showTab('prospectos')">👥 Prospectos</div>
+  <div class="tab" onclick="showTab('semanal')">📆 Semana a Semana</div>
+  <div class="tab" onclick="showTab('consolidado')">📊 Consolidado</div>
+</div>
+
+<div class="main">
+
+<!-- ══════════════════════════════════════════════════════════
+     TAB 1: RESUMEN
+══════════════════════════════════════════════════════════ -->
+<div class="section active" id="tab-resumen">
+
+  <!-- Month selector -->
+  <div class="month-bar">
+    <label>📅 Mes de análisis:</label>
+    <button class="month-btn" onclick="setMes(1)">Ene</button>
+    <button class="month-btn" onclick="setMes(2)">Feb</button>
+    <button class="month-btn" onclick="setMes(3)">Mar</button>
+    <button class="month-btn" onclick="setMes(4)">Abr</button>
+    <button class="month-btn" onclick="setMes(5)">May</button>
+    <button class="month-btn active" onclick="setMes(6)">Jun</button>
+    <button class="month-btn" onclick="setMes(7)">Jul</button>
+    <button class="month-btn" onclick="setMes(8)">Ago</button>
+    <button class="month-btn" onclick="setMes(9)">Sep</button>
+    <button class="month-btn" onclick="setMes(10)">Oct</button>
+    <button class="month-btn" onclick="setMes(11)">Nov</button>
+    <button class="month-btn" onclick="setMes(12)">Dic</button>
+  </div>
+
+  <!-- KPI cards -->
+  <div class="kpi-row">
+    <div class="kpi-card blue">
+      <div class="label">📅 Reuniones</div>
+      <div class="value" id="kpi-reu">—</div>
+      <div class="meta">Meta: 20 al mes</div>
+      <div class="badge" id="badge-reu">—</div>
+      <div class="progress-wrap"><div class="progress-bar" id="bar-reu" style="background:var(--blue);width:0%"></div></div>
+    </div>
+    <div class="kpi-card orange">
+      <div class="label">📄 Propuestas enviadas</div>
+      <div class="value" id="kpi-prop">—</div>
+      <div class="meta">Meta: 10 al mes</div>
+      <div class="badge" id="badge-prop">—</div>
+      <div class="progress-wrap"><div class="progress-bar" id="bar-prop" style="background:var(--orange);width:0%"></div></div>
+    </div>
+    <div class="kpi-card purple">
+      <div class="label">💼 Monto propuestas enviadas</div>
+      <div class="value" id="kpi-monto-prop">—</div>
+      <div class="meta">Suma total del mes</div>
+      <div class="badge" id="badge-monto-prop">—</div>
+      <div class="progress-wrap"><div class="progress-bar" id="bar-monto-prop" style="background:var(--purple);width:0%"></div></div>
+    </div>
+    <div class="kpi-card green">
+      <div class="label">🏆 Propuestas ganadas</div>
+      <div class="value" id="kpi-gan">—</div>
+      <div class="meta">Meta: 5 cierres</div>
+      <div class="badge" id="badge-gan">—</div>
+      <div class="progress-wrap"><div class="progress-bar" id="bar-gan" style="background:var(--green);width:0%"></div></div>
+    </div>
+    <div class="kpi-card yellow">
+      <div class="label">💰 Facturado</div>
+      <div class="value" id="kpi-fact">—</div>
+      <div class="meta">Meta: $25.000.000</div>
+      <div class="badge" id="badge-fact">—</div>
+      <div class="progress-wrap"><div class="progress-bar" id="bar-fact" style="background:var(--yellow);width:0%"></div></div>
+    </div>
+    <div class="kpi-card purple">
+      <div class="label">🎯 Tasa de cierre</div>
+      <div class="value" id="kpi-tasa">—</div>
+      <div class="meta">Ganadas / Propuestas</div>
+      <div class="badge" id="badge-tasa">—</div>
+    </div>
+    <div class="kpi-card">
+      <div class="label">📊 Ticket promedio</div>
+      <div class="value" id="kpi-ticket">—</div>
+      <div class="meta">Promedio por cierre</div>
+      <div class="badge neu" id="badge-ticket">histórico</div>
+    </div>
+  </div>
+
+  <!-- Alert box -->
+  <div id="alert-box"></div>
+
+  <!-- Charts row -->
+  <div class="grid2">
+    <!-- Reuniones por mes chart -->
+    <div class="panel">
+      <h3><span class="dot blue"></span> Reuniones por mes 2026</h3>
+      <div class="chart-wrap" id="chart-reuniones"></div>
+    </div>
+    <!-- Facturación por mes chart -->
+    <div class="panel">
+      <h3><span class="dot yellow"></span> Facturación mensual 2026 ($)</h3>
+      <div class="chart-wrap" id="chart-facturacion"></div>
+    </div>
+  </div>
+
+  <!-- Funnel + acumulado -->
+  <div class="grid2">
+    <div class="panel">
+      <h3><span class="dot orange"></span> Embudo Comercial — Mes seleccionado</h3>
+      <div class="funnel" id="funnel-mes"></div>
+    </div>
+    <div class="panel">
+      <h3><span class="dot green"></span> Acumulado 2026 (Ene–Mes actual)</h3>
+      <div id="acumulado-panel"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     TAB 2: REUNIONES
+══════════════════════════════════════════════════════════ -->
+<div class="section" id="tab-reuniones">
+  <div class="grid2" style="margin-bottom:18px;">
+    <div class="panel">
+      <h3><span class="dot blue"></span> Agregar reunión</h3>
+      <div class="input-row">
+        <div class="input-group"><label>Fecha</label><input type="date" id="r-fecha"></div>
+        <div class="input-group"><label>Empresa</label><input type="text" id="r-empresa" placeholder="Nombre empresa"></div>
+        <div class="input-group"><label>Contacto</label><input type="text" id="r-contacto" placeholder="Nombre contacto"></div>
+      </div>
+      <div class="input-row">
+        <div class="input-group"><label>Tema</label><input type="text" id="r-tema" placeholder="Ej: Presentación Teamclass" style="width:280px"></div>
+        <div class="input-group"><label>Cliente nuevo</label>
+          <select id="r-nuevo"><option value="Si">Sí, nuevo</option><option value="No">No, ya conocido</option></select>
+        </div>
+        <div class="input-group"><label>Modalidad</label>
+          <select id="r-modal"><option value="Streaming">Teams / Zoom</option><option value="Presencial">Presencial</option></select>
+        </div>
+        <button class="btn btn-primary" onclick="addReunion()">+ Agregar</button>
+      </div>
+    </div>
+    <div class="panel">
+      <h3><span class="dot blue"></span> Resumen reuniones</h3>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;" id="reu-stats"></div>
+    </div>
+  </div>
+  <div class="panel">
+    <h3><span class="dot blue"></span> Registro completo de reuniones</h3>
+    <div class="input-row" style="margin-bottom:12px;">
+      <div class="input-group"><label>Filtrar mes</label>
+        <select id="reu-filtro-mes" onchange="renderReuTable()">
+          <option value="0">Todos</option>
+          <option value="1">Enero</option><option value="2">Febrero</option><option value="3">Marzo</option>
+          <option value="4">Abril</option><option value="5">Mayo</option><option value="6">Junio</option>
+          <option value="7">Julio</option><option value="8">Agosto</option><option value="9">Septiembre</option>
+          <option value="10">Octubre</option><option value="11">Noviembre</option><option value="12">Diciembre</option>
+        </select>
+      </div>
+    </div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Fecha</th><th>Empresa</th><th>Contacto</th><th>Tema</th><th>Nuevo</th><th>Modalidad</th><th>Acciones</th></tr></thead>
+      <tbody id="reu-tbody"></tbody>
+    </table></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     TAB 3: FACTURACIÓN
+══════════════════════════════════════════════════════════ -->
+<div class="section" id="tab-facturacion">
+  <div class="grid2" style="margin-bottom:18px;">
+    <div class="panel">
+      <h3><span class="dot yellow"></span> Agregar proyecto/propuesta</h3>
+      <div class="input-row">
+        <div class="input-group"><label>Cliente</label><input type="text" id="f-cliente" placeholder="Nombre cliente"></div>
+        <div class="input-group"><label>Proyecto</label><input type="text" id="f-proyecto" placeholder="Nombre proyecto"></div>
+        <div class="input-group"><label>Monto Forecast ($)</label><input type="number" id="f-forecast" placeholder="5000000"></div>
+      </div>
+      <div class="input-row">
+        <div class="input-group"><label>Monto Facturado ($)</label><input type="number" id="f-facturado" placeholder="0"></div>
+        <div class="input-group"><label>Mes</label>
+          <select id="f-mes">
+            <option value="1">Enero</option><option value="2">Febrero</option><option value="3">Marzo</option>
+            <option value="4">Abril</option><option value="5">Mayo</option><option value="6" selected>Junio</option>
+            <option value="7">Julio</option><option value="8">Agosto</option><option value="9">Septiembre</option>
+            <option value="10">Octubre</option><option value="11">Noviembre</option><option value="12">Diciembre</option>
+          </select>
+        </div>
+        <div class="input-group"><label>Estado</label>
+          <select id="f-estado"><option value="Facturado">Facturado</option><option value="Forecast">Forecast</option><option value="Pendiente">Pendiente</option></select>
+        </div>
+        <button class="btn btn-primary" onclick="addFactura()">+ Agregar</button>
+      </div>
+    </div>
+    <div class="panel">
+      <h3><span class="dot green"></span> Resumen facturación</h3>
+      <div id="fact-resumen"></div>
+    </div>
+  </div>
+  <!-- PROPUESTAS PRESENTADAS PANEL -->
+  <div class="panel" style="margin-bottom:18px;">
+    <h3><span class="dot purple"></span> Registrar propuesta presentada</h3>
+    <div class="input-row">
+      <div class="input-group"><label>Mes</label>
+        <select id="pp-mes">
+          <option value="1">Enero</option><option value="2">Febrero</option><option value="3">Marzo</option>
+          <option value="4">Abril</option><option value="5">Mayo</option><option value="6" selected>Junio</option>
+          <option value="7">Julio</option><option value="8">Agosto</option><option value="9">Septiembre</option>
+          <option value="10">Octubre</option><option value="11">Noviembre</option><option value="12">Diciembre</option>
+        </select>
+      </div>
+      <div class="input-group"><label>Cliente</label><input type="text" id="pp-cliente" placeholder="Nombre cliente"></div>
+      <div class="input-group"><label>Propuesta</label><input type="text" id="pp-propuesta" placeholder="Nombre propuesta" style="width:220px"></div>
+      <div class="input-group"><label>Monto ($)</label><input type="number" id="pp-monto" placeholder="5000000"></div>
+      <div class="input-group"><label>Probabilidad</label>
+        <select id="pp-prob">
+          <option value="0.25">25% — Exploratorio</option>
+          <option value="0.50">50% — Necesidad concreta</option>
+          <option value="0.75">75% — Quick win</option>
+          <option value="1.00">100% — Cerrada</option>
+        </select>
+      </div>
+      <button class="btn btn-primary" onclick="addPropuesta()">+ Agregar</button>
+    </div>
+  </div>
+
+  <!-- PROPUESTAS DETALLE TABLE -->
+  <div class="panel" style="margin-bottom:18px;">
+    <h3><span class="dot purple"></span> Propuestas presentadas — detalle</h3>
+    <div class="input-row" style="margin-bottom:10px;">
+      <div class="input-group"><label>Filtrar mes</label>
+        <select id="pp-filtro-mes" onchange="renderPropuestasTable()">
+          <option value="0">Todos</option>
+          <option value="4" selected>Abril</option>
+          <option value="5">Mayo</option><option value="6">Junio</option>
+        </select>
+      </div>
+      <div id="pp-resumen-inline" style="font-size:13px;color:var(--navy);font-weight:600;display:flex;align-items:center;gap:8px;"></div>
+    </div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Mes</th><th>Cliente</th><th>Propuesta</th><th>Monto</th><th>Prob.</th><th>Estado</th><th>Acc.</th></tr></thead>
+      <tbody id="pp-tbody"></tbody>
+      <tfoot><tr style="background:#EDF2F7;font-weight:700;">
+        <td colspan="3" style="padding:8px 10px;">TOTAL PRESENTADO</td>
+        <td id="pp-total" style="padding:8px 10px;"></td>
+        <td colspan="3"></td>
+      </tr></tfoot>
+    </table></div>
+  </div>
+
+  <div class="panel">
+    <h3><span class="dot yellow"></span> Detalle de proyectos 2026</h3>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Mes</th><th>Cliente</th><th>Proyecto</th><th>Forecast</th><th>Facturado</th><th>Estado</th><th>Acciones</th></tr></thead>
+      <tbody id="fact-tbody"></tbody>
+      <tfoot><tr style="background:#EDF2F7;font-weight:700;">
+        <td colspan="3" style="padding:8px 10px;">TOTAL</td>
+        <td id="total-forecast" style="padding:8px 10px;"></td>
+        <td id="total-facturado" style="padding:8px 10px;"></td>
+        <td colspan="2"></td>
+      </tr></tfoot>
+    </table></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     TAB 4: PROSPECTOS
+══════════════════════════════════════════════════════════ -->
+<div class="section" id="tab-prospectos">
+  <div class="kpi-row" style="grid-template-columns:repeat(4,1fr);margin-bottom:18px;">
+    <div class="pros-stat"><div class="n" id="p-total">—</div><div class="l">Total prospectos</div></div>
+    <div class="pros-stat"><div class="n" id="p-1c">—</div><div class="l">Con 1er contacto</div></div>
+    <div class="pros-stat"><div class="n" id="p-2c">—</div><div class="l">Con 2do contacto</div></div>
+    <div class="pros-stat"><div class="n" id="p-new">—</div><div class="l">Nuevos esta semana (meta: 10)</div></div>
+  </div>
+
+  <div class="panel" style="margin-bottom:18px;">
+    <h3><span class="dot orange"></span> Agregar prospecto</h3>
+    <div class="input-row">
+      <div class="input-group"><label>Empresa</label><input type="text" id="pr-empresa" placeholder="Nombre empresa" style="width:200px"></div>
+      <div class="input-group"><label>Contacto</label><input type="text" id="pr-contacto" placeholder="Nombre"></div>
+      <div class="input-group"><label>Email</label><input type="text" id="pr-email" placeholder="email@empresa.cl" style="width:200px"></div>
+      <div class="input-group"><label>Rubro</label><input type="text" id="pr-rubro" placeholder="Ej: Construcción"></div>
+      <div class="input-group"><label>Fuente</label>
+        <select id="pr-fuente"><option>DEI/Social</option><option>Construcción</option><option>Prospección propia</option><option>Referido</option></select>
+      </div>
+      <button class="btn btn-primary" onclick="addProspecto()">+ Agregar</button>
+    </div>
+  </div>
+
+  <div class="grid2">
+    <div class="panel">
+      <h3><span class="dot orange"></span> Prospectos por fuente</h3>
+      <div class="chart-wrap" id="chart-prospectos"></div>
+    </div>
+    <div class="panel">
+      <h3><span class="dot blue"></span> Estado de seguimiento</h3>
+      <div id="pros-estado"></div>
+    </div>
+  </div>
+
+  <div class="panel" style="margin-top:18px;">
+    <h3><span class="dot orange"></span> Base de prospectos</h3>
+    <div class="input-row" style="margin-bottom:12px;">
+      <div class="input-group"><label>Filtrar fuente</label>
+        <select id="pr-filtro" onchange="renderProspTable()">
+          <option value="">Todos</option>
+          <option value="DEI/Social">DEI/Social</option>
+          <option value="Construcción">Construcción</option>
+          <option value="Prospección propia">Prospección propia</option>
+          <option value="Referido">Referido</option>
+        </select>
+      </div>
+    </div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>#</th><th>Empresa</th><th>Contacto</th><th>Email</th><th>Rubro/Fuente</th><th>1er Contacto</th><th>2do Contacto</th><th>Estado</th><th>Acc.</th></tr></thead>
+      <tbody id="pros-tbody"></tbody>
+    </table></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     TAB 5: SEMANA A SEMANA
+══════════════════════════════════════════════════════════ -->
+<div class="section" id="tab-semanal">
+  <div class="panel" style="margin-bottom:18px;">
+    <h3><span class="dot blue"></span> Tracker Semanal — Junio 2026</h3>
+    <p style="font-size:12px;color:var(--gray);margin-bottom:14px;">Meta semanal: 5 reuniones · 2-3 propuestas · 10 prospectos nuevos</p>
+    <div class="week-grid" id="week-grid"></div>
+  </div>
+
+  <div class="grid2">
+    <div class="panel">
+      <h3><span class="dot blue"></span> Registrar actividad semanal</h3>
+      <div class="input-row">
+        <div class="input-group"><label>Semana</label>
+          <select id="sw-semana">
+            <option value="1">Semana 1 (2–8 jun)</option>
+            <option value="2">Semana 2 (9–15 jun)</option>
+            <option value="3">Semana 3 (16–22 jun)</option>
+            <option value="4">Semana 4 (23–30 jun)</option>
+          </select>
+        </div>
+        <div class="input-group"><label>Reuniones</label><input type="number" id="sw-reu" min="0" style="width:90px" placeholder="0"></div>
+        <div class="input-group"><label>Propuestas</label><input type="number" id="sw-prop" min="0" style="width:90px" placeholder="0"></div>
+        <div class="input-group"><label>Prospectos nuevos</label><input type="number" id="sw-pros" min="0" style="width:90px" placeholder="0"></div>
+        <div class="input-group"><label>Cierres</label><input type="number" id="sw-cierres" min="0" style="width:90px" placeholder="0"></div>
+        <button class="btn btn-primary" onclick="saveWeek()">Guardar</button>
+      </div>
+    </div>
+    <div class="panel">
+      <h3><span class="dot green"></span> Indicadores semanales meta</h3>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div class="alert info">📅 <strong>5 reuniones/semana</strong> para llegar a 20 en el mes</div>
+        <div class="alert info">📄 <strong>2–3 propuestas/semana</strong> para llegar a 10 en el mes</div>
+        <div class="alert info">👥 <strong>10 prospectos nuevos/semana</strong> — KPI de prospección</div>
+        <div class="alert info">🏆 <strong>1–2 cierres/semana</strong> para llegar a 5 en el mes</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel" style="margin-top:18px;">
+    <h3><span class="dot orange"></span> Histórico semanal</h3>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Semana</th><th>Reuniones</th><th>vs Meta(5)</th><th>Propuestas</th><th>vs Meta(3)</th><th>Prospectos</th><th>vs Meta(10)</th><th>Cierres</th></tr></thead>
+      <tbody id="semana-tbody"></tbody>
+    </table></div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     TAB 6: CONSOLIDADO
+══════════════════════════════════════════════════════════ -->
+<div class="section" id="tab-consolidado">
+
+  <!-- META ANUAL -->
+  <div class="panel" style="margin-bottom:22px;">
+    <h3><span class="dot yellow"></span> Meta Anual 2026 — Cumplimiento a la fecha</h3>
+    <div id="meta-anual-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:18px;"></div>
+    <div id="meta-anual-bars"></div>
+  </div>
+
+  <!-- TABLA CONSOLIDADO MES A MES -->
+  <div class="panel">
+    <h3><span class="dot blue"></span> Consolidado mensual — KPIs vs Meta</h3>
+    <div class="table-wrap">
+      <table id="tabla-consolidado">
+        <thead>
+          <tr>
+            <th>Mes</th>
+            <th>Reuniones</th><th>Meta</th><th>%</th>
+            <th>Propuestas</th><th>Meta</th><th>%</th>
+            <th>Cierres</th><th>Meta</th><th>%</th>
+            <th>Facturado</th><th>Meta</th><th>%</th>
+            <th>M. Propuestas</th>
+          </tr>
+        </thead>
+        <tbody id="consolidado-tbody"></tbody>
+        <tfoot>
+          <tr id="consolidado-tfoot" style="background:#EDF2F7;font-weight:700;font-size:12px;"></tr>
+        </tfoot>
+      </table>
+    </div>
+  </div>
+
+</div>
+</div><!-- /main -->
+
+<div class="footer">Panel Comercial · Julieta Lagorio · Teamclass 2026 · Actualizable y editable</div>
+
+<script>
+// ════════════════════════════════════════════════════════════
+// GOOGLE SHEETS CONFIG
+// ════════════════════════════════════════════════════════════
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxSh7OIW7hFjS35B81tGZvENfrCJl7LwQLFpcBrzgrkiEZ_dVlLzNptr4gjEroTm92zVA/exec';
+
+async function gsRead(tab) {
+  try {
+    const r = await fetch(SCRIPT_URL + '?action=read&tab=' + encodeURIComponent(tab), {
+      method: 'GET',
+      redirect: 'follow'
+    });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const d = await r.json();
+    if (d && d.error) throw new Error(d.error);
+    return d;
+  } catch(e) {
+    console.error('gsRead error [' + tab + ']:', e);
+    throw new Error('No se pudo leer ' + tab + ': ' + e.message);
+  }
+}
+
+async function gsWrite(tab, rows) {
+  try {
+    const payload = JSON.stringify({ action: 'write', tab: tab, data: rows });
+    const r = await fetch(SCRIPT_URL, {
+      method: 'POST',
+      redirect: 'follow',
+      headers: { 'Content-Type': 'text/plain' },
+      body: payload
+    });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const d = await r.json();
+    if (d && d.error) throw new Error(d.error);
+    return d;
+  } catch(e) {
+    console.error('gsWrite error [' + tab + ']:', e);
+    throw new Error('No se pudo guardar ' + tab + ': ' + e.message);
+  }
+}
+
+async function saveToSheets() {
+  showSaveStatus('💾 Guardando en Google Sheets...');
+  try {
+    // Save reuniones
+    const reuRows = [['fecha','empresa','contacto','tema','nuevo','modal']];
+    DATA.reuniones.forEach(r => reuRows.push([r.fecha,r.empresa,r.contacto||'',r.tema||'',r.nuevo||'',r.modal||'']));
+    await gsWrite('Reuniones', reuRows);
+
+    // Save facturacion
+    const factRows = [['cliente','proyecto','forecast','facturado','mes','estado']];
+    DATA.facturacion.forEach(f => factRows.push([f.cliente,f.proyecto,f.forecast,f.facturado,f.mes,f.estado]));
+    await gsWrite('Facturacion', factRows);
+
+    // Save prospectos
+    const prosRows = [['empresa','contacto','email','rubro','fuente','fecha1','fecha2','notas']];
+    DATA.prospectos.forEach(p => prosRows.push([p.empresa,p.contacto||'',p.email||'',p.rubro||'',p.fuente||'',p.fecha1||'',p.fecha2||'',p.notas||'']));
+    await gsWrite('Prospectos', prosRows);
+
+    // Save propuestasDetalle
+    const propRows = [['mes','cliente','propuesta','monto','prob','estado']];
+    DATA.propuestasDetalle.forEach(p => propRows.push([p.mes,p.cliente,p.propuesta,p.monto,p.prob,p.estado]));
+    await gsWrite('Propuestas', propRows);
+
+    // Save semanas
+    const semRows = [['semana','reu','prop','pros','cierres']];
+    Object.entries(DATA.semanas).forEach(([k,v]) => semRows.push([k,v.reu,v.prop,v.pros,v.cierres]));
+    await gsWrite('Semanas', semRows);
+
+    showSaveStatus('✅ Guardado en Google Sheets', 'ok');
+  } catch(e) {
+    showSaveStatus('❌ Error al guardar: ' + e.message, 'error');
+  }
+}
+
+async function loadFromSheets() {
+  showSaveStatus('🔄 Cargando desde Google Sheets...');
+  try {
+    // Load reuniones
+    const reuData = await gsRead('Reuniones');
+    if (reuData && reuData.length > 1) {
+      DATA.reuniones = reuData.slice(1).filter(r=>r[0]).map(r => ({
+        fecha: r[0] instanceof Date ? r[0].toISOString().split('T')[0] : String(r[0]),
+        empresa: r[1], contacto: r[2], tema: r[3], nuevo: r[4], modal: r[5]
+      }));
+    }
+
+    // Load facturacion
+    const factData = await gsRead('Facturacion');
+    if (factData && factData.length > 1) {
+      DATA.facturacion = factData.slice(1).filter(r=>r[0]).map(r => ({
+        cliente: r[0], proyecto: r[1], forecast: parseFloat(r[2])||0,
+        facturado: parseFloat(r[3])||0, mes: parseInt(r[4])||0, estado: r[5]
+      }));
+    }
+
+    // Load prospectos
+    const prosData = await gsRead('Prospectos');
+    if (prosData && prosData.length > 1) {
+      DATA.prospectos = prosData.slice(1).filter(r=>r[0]).map(r => ({
+        empresa: r[0], contacto: r[1], email: r[2], rubro: r[3],
+        fuente: r[4], fecha1: r[5], fecha2: r[6], notas: r[7]
+      }));
+    }
+
+    // Load propuestas detalle
+    const propData = await gsRead('Propuestas');
+    if (propData && propData.length > 1) {
+      DATA.propuestasDetalle = propData.slice(1).filter(r=>r[0]).map(r => ({
+        mes: parseInt(r[0])||0, cliente: r[1], propuesta: r[2],
+        monto: parseFloat(r[3])||0, prob: parseFloat(r[4])||0, estado: r[5]
+      }));
+      // Recalculate propuestas summary
+      DATA.propuestas = {};
+      DATA.propuestasDetalle.forEach(p => {
+        if (!DATA.propuestas[p.mes]) DATA.propuestas[p.mes] = {enviadas:0,ganadas:0,monto:0};
+        DATA.propuestas[p.mes].enviadas++;
+        DATA.propuestas[p.mes].monto += p.monto;
+        if (p.estado === 'Ganada') DATA.propuestas[p.mes].ganadas++;
+      });
+    }
+
+    // Load semanas
+    const semData = await gsRead('Semanas');
+    if (semData && semData.length > 1) {
+      semData.slice(1).filter(r=>r[0]).forEach(r => {
+        DATA.semanas[parseInt(r[0])] = {reu:parseInt(r[1])||0, prop:parseInt(r[2])||0, pros:parseInt(r[3])||0, cierres:parseInt(r[4])||0};
+      });
+    }
+
+    showSaveStatus('✅ Datos cargados desde Google Sheets', 'ok');
+    // Refresh all views
+    setMes(mesActual);
+    renderReuTable();
+    renderFacturacion();
+    renderPropuestasTable();
+    renderProspectos();
+    renderSemanal();
+    renderConsolidado();
+  } catch(e) {
+    showSaveStatus('❌ Error al cargar: ' + e.message, 'error');
+  }
+}
+
+function showSaveStatus(msg, type) {
+  const el = document.getElementById('save-status');
+  if (!el) return;
+  el.textContent = msg;
+  el.style.color = type==='ok' ? 'var(--green)' : type==='error' ? 'var(--red)' : 'var(--blue)';
+  if (type==='ok') setTimeout(() => { el.textContent = ''; }, 4000);
+}
+
+// ════════════════════════════════════════════════════════════
+// DATA STORE
+// ════════════════════════════════════════════════════════════
+const METAS = { reu: 20, prop: 10, cierres: 5, venta: 25000000 };
+const MESES_NOM = ['','Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+
+// Real data from files
+const DATA = {
+  reuniones: [
+    {fecha:'2026-01-02',empresa:'Mena y Ovalle',contacto:'',tema:'Presentacion TeamClass',nuevo:'Si',modal:'Streaming'},
+    {fecha:'2026-01-02',empresa:'Techint',contacto:'',tema:'Presentacion TeamClass',nuevo:'si',modal:'Streaming'},
+    {fecha:'2026-01-08',empresa:'CAMACOES',contacto:'',tema:'Evento dia de la Mujer',nuevo:'no',modal:'Presencial'},
+    {fecha:'2026-01-08',empresa:'Lemontech',contacto:'',tema:'Presentacion TeamClass',nuevo:'Si',modal:'Streaming'},
+    {fecha:'2026-01-09',empresa:'Bioprocess',contacto:'',tema:'Presentacion TeamClass',nuevo:'si',modal:'Streaming'},
+    {fecha:'2026-01-13',empresa:'Melon',contacto:'',tema:'Ejecucion de curso',nuevo:'No',modal:'Streaming'},
+    {fecha:'2026-01-14',empresa:'EXCON',contacto:'',tema:'Presentacion TeamClass',nuevo:'Si',modal:'Streaming'},
+    {fecha:'2026-01-16',empresa:'Plagaccion',contacto:'',tema:'Plan 2026',nuevo:'No',modal:'Streaming'},
+    {fecha:'2026-01-16',empresa:'CAF',contacto:'',tema:'Presentacion TeamClass',nuevo:'SI',modal:'Streaming'},
+    {fecha:'2026-01-20',empresa:'Grenergy',contacto:'',tema:'Propuesta pre contratos',nuevo:'SI',modal:'Streaming'},
+    {fecha:'2026-01-23',empresa:'COPEC EMOAC',contacto:'',tema:'Presentacion TeamClass',nuevo:'SI',modal:'Streaming'},
+    {fecha:'2026-02-02',empresa:'CAMACOES',contacto:'',tema:'Revision posibles acciones OTIC',nuevo:'no',modal:'Presencial'},
+    {fecha:'2026-02-02',empresa:'SERVEO',contacto:'',tema:'Talleres SOMOS EQUIPO',nuevo:'no',modal:'Streaming'},
+    {fecha:'2026-02-03',empresa:'Kruse',contacto:'',tema:'Revision objetivos 2026',nuevo:'no',modal:'Streaming'},
+    {fecha:'2026-02-03',empresa:'COPEC - EMOAC',contacto:'',tema:'Desafios 2026 - Capsulas elearning',nuevo:'Si',modal:'Streaming'},
+    {fecha:'2026-02-09',empresa:'Melon',contacto:'',tema:'Taller Atencion al cliente',nuevo:'no',modal:'Streaming'},
+    {fecha:'2026-02-11',empresa:'Lemontech',contacto:'',tema:'Academy Legacy',nuevo:'Si',modal:'Streaming'},
+    {fecha:'2026-02-12',empresa:'Albemarle',contacto:'',tema:'Programa Aprendices',nuevo:'No',modal:'Streaming'},
+    {fecha:'2026-02-13',empresa:'Albemarle',contacto:'',tema:'Plan 2026 - ejecucion NCh3262',nuevo:'No',modal:'Presencial'},
+    {fecha:'2026-02-16',empresa:'Techint',contacto:'',tema:'Revision plan 2026',nuevo:'Si',modal:'Presencial'},
+    {fecha:'2026-02-18',empresa:'Techint',contacto:'',tema:'Plan 2026 - Semillero supervisores',nuevo:'Si',modal:'Streaming'},
+    {fecha:'2026-02-23',empresa:'Granergy',contacto:'',tema:'Oficios sustentables',nuevo:'Si',modal:'Streaming'},
+    {fecha:'2026-02-23',empresa:'Grupo Diana',contacto:'',tema:'Programa Inspira +',nuevo:'Si',modal:'Streaming'},
+    {fecha:'2026-02-23',empresa:'Con Pax',contacto:'',tema:'Talento Mujer',nuevo:'Si',modal:'Presencial'},
+    {fecha:'2026-02-24',empresa:'Terminal Pacifico Sur',contacto:'',tema:'Primeros Auxilios',nuevo:'Si',modal:'Streaming'},
+    {fecha:'2026-02-26',empresa:'Resiter',contacto:'',tema:'Plan 2026',nuevo:'Si',modal:'Streaming'},
+    {fecha:'2026-02-26',empresa:'Serveo',contacto:'',tema:'Team Building Lideres',nuevo:'No',modal:'Streaming'},
+    {fecha:'2026-03-02',empresa:'Fundacion Trascender',contacto:'',tema:'Coaching lideres',nuevo:'Si',modal:'Streaming'},
+    {fecha:'2026-03-02',empresa:'Echeverria Izquierdo',contacto:'',tema:'Plan 2026 Diversidad e Inclusion',nuevo:'No',modal:'Streaming'},
+    {fecha:'2026-03-03',empresa:'Serveo',contacto:'',tema:'8M',nuevo:'no',modal:'Streaming'},
+    {fecha:'2026-03-03',empresa:'Scotiabank',contacto:'',tema:'Capacitacion y DO - desafios 2026',nuevo:'Si',modal:'Streaming'},
+    {fecha:'2026-03-04',empresa:'Scotiabank',contacto:'',tema:'Bienestar',nuevo:'Si',modal:'Streaming'},
+    {fecha:'2026-03-04',empresa:'Scotiabank',contacto:'',tema:'Diversidad e Inclusion',nuevo:'Si',modal:'Streaming'},
+    {fecha:'2026-04-06',empresa:'Albemarle',contacto:'',tema:'Levantamiento Academia Supervisor',nuevo:'No',modal:'Streaming'},
+    {fecha:'2026-04-06',empresa:'Ararat',contacto:'',tema:'Actividades de bienestar',nuevo:'Si',modal:'Streaming'},
+    {fecha:'2026-04-08',empresa:'Besalco',contacto:'',tema:'Presentacion Teamclass area Social',nuevo:'Si',modal:'Streaming'},
+    {fecha:'2026-04-09',empresa:'EMIN',contacto:'',tema:'Retomar contacto programas sociales',nuevo:'No',modal:'Streaming'},
+    {fecha:'2026-04-13',empresa:'Fortaleza',contacto:'',tema:'Presentacion Teamclass area Social',nuevo:'Si',modal:'Streaming'},
+    {fecha:'2026-04-14',empresa:'LyD',contacto:'',tema:'Retomar contacto programas sociales',nuevo:'Si',modal:'Streaming'},
+    {fecha:'2026-04-16',empresa:'Mena y Ovalle',contacto:'',tema:'Presentacion Teamclass area Social',nuevo:'Si',modal:'Streaming'},
+    {fecha:'2026-04-17',empresa:'Serveo',contacto:'Juan Jaña',tema:'Coordinacion programa Somos Equipo v2',nuevo:'No',modal:'Streaming'},
+    {fecha:'2026-04-27',empresa:'Arauco',contacto:'',tema:'Presentacion Teamclass area Social',nuevo:'Si',modal:'Streaming'},
+    {fecha:'2026-04-27',empresa:'Agrospec',contacto:'',tema:'Presentacion Teamclass area Social',nuevo:'Si',modal:'Streaming'},
+    {fecha:'2026-04-27',empresa:'Astilleros Arica',contacto:'',tema:'Presentacion Teamclass area Social',nuevo:'Si',modal:'Streaming'},
+    {fecha:'2026-04-28',empresa:'Viña Francisco de Aguirre',contacto:'',tema:'Presentacion Teamclass area Social',nuevo:'Si',modal:'Streaming'},
+    {fecha:'2026-04-28',empresa:'Serveo',contacto:'',tema:'Cierre venta Programa Somos Equipo v2',nuevo:'No',modal:'Streaming'},
+    {fecha:'2026-04-29',empresa:'Constructora Baquedano',contacto:'',tema:'Presentacion Teamclass area Social',nuevo:'Si',modal:'Streaming'},
+    {fecha:'2026-04-29',empresa:'Constructora Avanti',contacto:'',tema:'Presentacion Teamclass area Social',nuevo:'Si',modal:'Streaming'},
+    {fecha:'2026-05-05',empresa:'Serveo',contacto:'Juan Jaña',tema:'Coordinacion programa Somos Equipo v2',nuevo:'No',modal:'Streaming'},
+    {fecha:'2026-05-06',empresa:'Serveo',contacto:'Juan Jaña',tema:'Revision capacitaciones 2025 y plan 2026',nuevo:'No',modal:'Streaming'},
+    {fecha:'2026-05-06',empresa:'Copec Emoac',contacto:'Carlos Fernandez',tema:'Presentacion Teamclass area Social',nuevo:'Si',modal:'Streaming'},
+    {fecha:'2026-05-07',empresa:'Plagaaccion',contacto:'Cynthia Muñoz',tema:'Retomar acciones de capacitacion',nuevo:'No',modal:'Streaming'},
+    {fecha:'2026-05-07',empresa:'Exon',contacto:'Maria Elena Infante',tema:'Presentacion Teamclass area Social',nuevo:'Si',modal:'Streaming'},
+    {fecha:'2026-05-11',empresa:'Municipalidad de Valdivia',contacto:'Adrian Hernandez',tema:'Presentacion Teamclass area Social',nuevo:'Si',modal:'Streaming'},
+    {fecha:'2026-05-11',empresa:'Cemento Polpaico',contacto:'Loreto Mendez',tema:'Presentacion Teamclass area Social',nuevo:'Si',modal:'Streaming'},
+    {fecha:'2026-05-12',empresa:'Castaño',contacto:'Gabriel Marchant',tema:'Presentacion Teamclass area Social',nuevo:'Si',modal:'Streaming'},
+    {fecha:'2026-05-12',empresa:'Besalco',contacto:'Daniela Opazo',tema:'Presentacion Teamclass area Social',nuevo:'Si',modal:'Streaming'},
+    {fecha:'2026-05-13',empresa:'AITUE',contacto:'Cristian Badilla',tema:'Presentacion Teamclass area Social',nuevo:'Si',modal:'Streaming'},
+    {fecha:'2026-05-14',empresa:'Fortaleza',contacto:'Syssy Mardones',tema:'Presentacion Teamclass area Social',nuevo:'Si',modal:'Streaming'},
+    {fecha:'2026-05-14',empresa:'BCI',contacto:'Ximena Cortes',tema:'Presentacion Teamclass area Social',nuevo:'Si',modal:'Streaming'},
+    {fecha:'2026-05-18',empresa:'Sky Airline',contacto:'Irina Barrientos',tema:'Presentacion Teamclass area Social',nuevo:'Si',modal:'Streaming'},
+    {fecha:'2026-05-18',empresa:'RIOLOA',contacto:'Fabian Villegas',tema:'Presentacion Teamclass area Social',nuevo:'Si',modal:'Streaming'},
+    {fecha:'2026-05-19',empresa:'MPM',contacto:'Rodrigo Cisternas',tema:'Presentacion Teamclass area Social',nuevo:'Si',modal:'Streaming'},
+    {fecha:'2026-05-19',empresa:'SERVEO',contacto:'Juan Jaña',tema:'Presentacion programa SOMOS FAMILIA',nuevo:'No',modal:'Streaming'},
+    {fecha:'2026-05-20',empresa:'Constructora M&S',contacto:'Roberto Mora',tema:'Presentacion Teamclass area Social',nuevo:'Si',modal:'Streaming'},
+    {fecha:'2026-05-20',empresa:'Plagaacion',contacto:'Cynthia Muñoz',tema:'Retomar plan de capacitacion',nuevo:'No',modal:'Streaming'},
+    {fecha:'2026-05-22',empresa:'Nutrisco',contacto:'Francisca Prieto',tema:'Presentacion Teamclass area Social',nuevo:'Si',modal:'Streaming'},
+    {fecha:'2026-05-25',empresa:'Marina del Sol',contacto:'Nelson Lopez',tema:'Presentacion Teamclass area Social',nuevo:'Si',modal:'Streaming'},
+    {fecha:'2026-05-25',empresa:'Mena y Ovalle',contacto:'Ana Maria Leon',tema:'Presentacion Teamclass area Social',nuevo:'Si',modal:'Streaming'},
+    {fecha:'2026-05-25',empresa:'SOFOFA SUR',contacto:'Teresa Paredes',tema:'Presentacion Teamclass area Social',nuevo:'No',modal:'Streaming'},
+    {fecha:'2026-05-26',empresa:'Minera Valle Central',contacto:'Juan Gonzalez',tema:'Presentacion Teamclass area Social',nuevo:'Si',modal:'Streaming'},
+    {fecha:'2026-06-01',empresa:'Scotiabanck',contacto:'',tema:'Presentacion Teamclass area Social',nuevo:'Si',modal:'Streaming'},
+    {fecha:'2026-06-01',empresa:'Blumar',contacto:'',tema:'Presentacion Teamclass area Social',nuevo:'Si',modal:'Streaming'},
+    {fecha:'2026-06-02',empresa:'Fundacion RENUEVA',contacto:'',tema:'Propuesta Programa Cuidar con sentido',nuevo:'Si',modal:'Streaming'},
+  ],
+
+  facturacion: [
+    {cliente:'ALBEMARLE',proyecto:'PIT CREW',forecast:3780000,facturado:3780000,mes:1,estado:'Facturado'},
+    {cliente:'SERVEO',proyecto:'SOMOS EQUIPO',forecast:2484000,facturado:2484000,mes:2,estado:'Facturado'},
+    {cliente:'SERVEO',proyecto:'TALLER CLIMA',forecast:5796000,facturado:5610000,mes:3,estado:'Facturado'},
+    {cliente:'MELON',proyecto:'LIDERAZGO',forecast:1840000,facturado:1980000,mes:3,estado:'Facturado'},
+    {cliente:'SERVEO',proyecto:'8M TALLER',forecast:2796000,facturado:2475000,mes:3,estado:'Facturado'},
+    {cliente:'SERVEO',proyecto:'ENCUENTRO DE LIDERES',forecast:10764000,facturado:10764000,mes:4,estado:'Facturado'},
+    {cliente:'SERVEO',proyecto:'Diferencia 8M',forecast:552000,facturado:552000,mes:4,estado:'Facturado'},
+    {cliente:'IPLACEX',proyecto:'IA',forecast:2640000,facturado:2640000,mes:4,estado:'Facturado'},
+    {cliente:'ALBEMARLE',proyecto:'TALLER LIDERAZGO DO',forecast:632500,facturado:632500,mes:5,estado:'Facturado'},
+    {cliente:'SERVEO',proyecto:'SOMOS EQUIPO v2',forecast:4968000,facturado:4968000,mes:5,estado:'Facturado'},
+    {cliente:'IPLACEX',proyecto:'IA',forecast:1320000,facturado:1320000,mes:5,estado:'Facturado'},
+    {cliente:'Albemarle',proyecto:'Liderazgo',forecast:1437500,facturado:0,mes:6,estado:'Forecast'},
+    {cliente:'LyD',proyecto:'Office 365',forecast:330000,facturado:0,mes:6,estado:'Forecast'},
+  ],
+
+  prospectos: [
+    // DEI/Social - first 20 from file
+    {empresa:'AGROINDUSTRIAL JAPI LTDA',contacto:'',email:'margarita.villalobos@agrojapi.cl',rubro:'Servicios Administrativos',fuente:'DEI/Social',fecha1:'2026-04-14',fecha2:'',notas:'Pyme'},
+    {empresa:'AGUAPIEDRAS SPA',contacto:'',email:'contacto@aguapiedras.cl',rubro:'Alojamiento y Gastronomía',fuente:'DEI/Social',fecha1:'2026-04-14',fecha2:'',notas:'Pyme'},
+    {empresa:'INVERSIONES DOÑA PAULINA SPA',contacto:'',email:'mbarrientos@margo.cl',rubro:'Alojamiento y Gastronomía',fuente:'DEI/Social',fecha1:'2026-04-14',fecha2:'',notas:'Pyme'},
+    {empresa:'INVERSIONES VESPUCCI ATACAMA SPA',contacto:'',email:'alejandra.perez@inversionescastilla.cl',rubro:'Alojamiento y Gastronomía',fuente:'DEI/Social',fecha1:'2026-04-14',fecha2:'',notas:'Pyme'},
+    {empresa:'SERVICIOS GASTRONÓMICOS MARIA LUISA',contacto:'',email:'marialuisa@biogastronomia.cl',rubro:'Gastronomía',fuente:'DEI/Social',fecha1:'2026-04-14',fecha2:'',notas:'Pyme'},
+    // Construccion
+    {empresa:'AITUE',contacto:'Cristina Badilla Reyes',email:'cabadilla@aitue.cl',rubro:'Construcción',fuente:'Construcción',fecha1:'2026-05-27',fecha2:'',notas:''},
+    {empresa:'ARARAT SPA',contacto:'Roberto Salamanca',email:'robertosalamanca@ararat.cl',rubro:'Construcción',fuente:'Construcción',fecha1:'2026-05-27',fecha2:'',notas:''},
+    {empresa:'BESALCO',contacto:'Daniela Opazo',email:'daniela.opazo@besalco.cl',rubro:'Construcción',fuente:'Construcción',fecha1:'2026-05-27',fecha2:'2026-06-03',notas:''},
+    {empresa:'SKY AIRLINE',contacto:'Mayra Kohler',email:'mayra.kohler@skyairline.com',rubro:'Aviación',fuente:'Construcción',fecha1:'2026-05-27',fecha2:'2026-06-03',notas:''},
+    {empresa:'ENTEL',contacto:'Paula Caceres',email:'pcaceresa@entel.cl',rubro:'Telecomunicaciones',fuente:'Construcción',fecha1:'2026-05-27',fecha2:'2026-06-03',notas:''},
+    {empresa:'ETEX',contacto:'Nicold Santander',email:'nicold.santander@etexgroup.com',rubro:'Construcción',fuente:'Construcción',fecha1:'2026-05-27',fecha2:'2026-06-03',notas:''},
+    {empresa:'INCHCAPE',contacto:'Gabriel Mora',email:'gabriel.mora@inchcape.cl',rubro:'Automotriz',fuente:'Construcción',fecha1:'2026-05-27',fecha2:'2026-06-03',notas:''},
+    {empresa:'CENTRAL SERVICING',contacto:'Francisco Riquelme',email:'friquelme@centralservicing.cl',rubro:'Servicios',fuente:'Construcción',fecha1:'2026-05-27',fecha2:'2026-06-03',notas:''},
+  ],
+
+  propuestas: {
+    1:{enviadas:7,  ganadas:0, monto:29868000},
+    2:{enviadas:19, ganadas:3, monto:149175000},
+    3:{enviadas:9,  ganadas:2, monto:81656000},
+    4:{enviadas:11, ganadas:3, monto:70696000},
+    5:{enviadas:7,  ganadas:1, monto:137402000},
+    6:{enviadas:7,  ganadas:0, monto:45412000}
+  },
+
+  propuestasDetalle: [
+    {mes:1,cliente:'Bioprocess',               propuesta:'Trabajo Colaborativo en accion',                   monto:3080000,  prob:0.00,estado:'En curso'},
+    {mes:1,cliente:'Construmart',              propuesta:'Liderazgo femenino en accion',                    monto:5760000,  prob:0.00,estado:'En curso'},
+    {mes:1,cliente:'Grenergy',                 propuesta:'Manos en accion',                                 monto:9900000,  prob:0.00,estado:'En curso'},
+    {mes:1,cliente:'CAF',                      propuesta:'Excel + Power BI',                                monto:3200000,  prob:0.25,estado:'En curso'},
+    {mes:1,cliente:'CAF',                      propuesta:'Formador de Formadores',                          monto:2208000,  prob:0.25,estado:'En curso'},
+    {mes:1,cliente:'CAF',                      propuesta:'Programa Lideres',                                monto:3080000,  prob:0.25,estado:'En curso'},
+    {mes:1,cliente:'Echeveria Izquierdo',      propuesta:'Gestor de Inclusion',                             monto:2640000,  prob:0.25,estado:'En curso'},
+    {mes:2,cliente:'Albemarle',                propuesta:'Liderazgo y Equidad de Genero',                   monto:4140000,  prob:0.50,estado:'En curso'},
+    {mes:2,cliente:'Albemarle',                propuesta:'Sesgos Inconscientes',                            monto:4140000,  prob:0.50,estado:'En curso'},
+    {mes:2,cliente:'Albemarle',                propuesta:'Prevencion de Violencias',                        monto:4140000,  prob:0.50,estado:'En curso'},
+    {mes:2,cliente:'Albemarle',                propuesta:'Capsula NCH:3262',                                monto:4800000,  prob:0.50,estado:'En curso'},
+    {mes:2,cliente:'Albemarle',                propuesta:'Webinars Sensibilizacion NCH:3262',               monto:2400000,  prob:0.50,estado:'En curso'},
+    {mes:2,cliente:'Albemarle',                propuesta:'Ley 21.643 - Ley Karin',                          monto:4800000,  prob:0.50,estado:'En curso'},
+    {mes:2,cliente:'Albemarle',                propuesta:'Igualdad de Genero',                              monto:4830000,  prob:0.50,estado:'En curso'},
+    {mes:2,cliente:'Albemarle',                propuesta:'Sesgos Inconcientes',                             monto:4830000,  prob:0.50,estado:'En curso'},
+    {mes:2,cliente:'Albemarle',                propuesta:'Lenguaje inclusivo',                              monto:4800000,  prob:0.50,estado:'En curso'},
+    {mes:2,cliente:'SERVEO',                   propuesta:'Programa clima organizacional NORTE',             monto:8280000,  prob:1.00,estado:'Ganada'},
+    {mes:2,cliente:'Melon',                    propuesta:'Atencion al cliente y manejo de conflictos',      monto:1840000,  prob:1.00,estado:'Ganada'},
+    {mes:2,cliente:'LEMONTECH',                propuesta:'Desarrollo programa e-learning',                  monto:12420000, prob:0.50,estado:'En curso'},
+    {mes:2,cliente:'Grupo Diana',              propuesta:'Programa Inspira+',                               monto:32880000, prob:0.00,estado:'En curso'},
+    {mes:2,cliente:'CON PAX',                  propuesta:'Talento Activo',                                  monto:6900000,  prob:0.25,estado:'En curso'},
+    {mes:2,cliente:'CON PAX',                  propuesta:'Programa Mujeres',                                monto:4800000,  prob:0.25,estado:'En curso'},
+    {mes:2,cliente:'Terminal Pacifico Sur',    propuesta:'Taller Primeros Auxilios',                        monto:2200000,  prob:0.25,estado:'En curso'},
+    {mes:2,cliente:'Serveo',                   propuesta:'TeamBuilding Lideres',                            monto:6600000,  prob:1.00,estado:'Ganada'},
+    {mes:2,cliente:'Resiter',                  propuesta:'Plan 2026',                                       monto:34375000, prob:0.25,estado:'En curso'},
+    {mes:3,cliente:'SERVEO',                   propuesta:'Charlas 8M',                                      monto:2400000,  prob:1.00,estado:'Ganada'},
+    {mes:3,cliente:'Boetsch',                  propuesta:'Plan 2026',                                       monto:36000000, prob:0.00,estado:'En curso'},
+    {mes:3,cliente:'Echeverria Izquierdo',     propuesta:'Charla Diversidad e Inclusion',                  monto:1656000,  prob:0.00,estado:'En curso'},
+    {mes:3,cliente:'Echeverria Izquierdo',     propuesta:'Programa Palabras que Suman',                    monto:16800000, prob:0.00,estado:'En curso'},
+    {mes:3,cliente:'Echeverria Izquierdo',     propuesta:'Voluntariado corporativo',                       monto:7200000,  prob:0.00,estado:'En curso'},
+    {mes:3,cliente:'SERVEO',                   propuesta:'Encuentro de Lideres',                            monto:6600000,  prob:1.00,estado:'Ganada'},
+    {mes:3,cliente:'Lemontech',                propuesta:'Capsulas e-learning',                             monto:6000000,  prob:0.25,estado:'En curso'},
+    {mes:3,cliente:'ANGLOAMERICAN',            propuesta:'Capsula micro learning',                          monto:1000000,  prob:0.00,estado:'En curso'},
+    {mes:3,cliente:'ANGLOAMERICAN',            propuesta:'Curso e-learning seguridad',                      monto:4000000,  prob:0.00,estado:'En curso'},
+    {mes:4,cliente:'Corp. Villa Alemana',      propuesta:'Impulsa Futuro - Apresto laboral',               monto:9936000,  prob:0.50,estado:'En curso'},
+    {mes:4,cliente:'Corp. Villa Alemana',      propuesta:'Mayores en accion',                              monto:13800000, prob:0.50,estado:'En curso'},
+    {mes:4,cliente:'Corp. Villa Alemana',      propuesta:'Cuidar con Sentido',                             monto:6600000,  prob:0.50,estado:'En curso'},
+    {mes:4,cliente:'SERVEO',                   propuesta:'Curso Ingles',                                   monto:3400000,  prob:0.75,estado:'En curso'},
+    {mes:4,cliente:'Albemarle',                propuesta:'Taller Liderazgo DO',                            monto:2040000,  prob:1.00,estado:'Ganada'},
+    {mes:4,cliente:'Boetsch',                  propuesta:'Taller Finiquito en terreno',                    monto:1650000,  prob:0.00,estado:'En curso'},
+    {mes:4,cliente:'Almawater',                propuesta:'Curso e-learning seguridad',                     monto:6900000,  prob:0.25,estado:'En curso'},
+    {mes:4,cliente:'IPLACEX',                  propuesta:'IA',                                             monto:3600000,  prob:1.00,estado:'Ganada'},
+    {mes:4,cliente:'Corp. Villa Alemana',      propuesta:'Programa Bienestar - Talento Digital',           monto:11040000, prob:0.50,estado:'En curso'},
+    {mes:4,cliente:'SERVEO',                   propuesta:'Somos Equipo version 2',                         monto:6900000,  prob:1.00,estado:'Ganada'},
+    {mes:4,cliente:'ARAUCO',                   propuesta:'Prog. Social Alfabetizacion Digital Adultos',    monto:4830000,  prob:0.00,estado:'En curso'},
+    {mes:5,cliente:'Albemarle',                propuesta:'Academia Supervision Responsable',               monto:56000000, prob:0.25,estado:'En curso'},
+    {mes:5,cliente:'ENAP',                     propuesta:'Licitacion Bodegaje',                            monto:13000000, prob:0.00,estado:'En curso'},
+    {mes:5,cliente:'Serveo',                   propuesta:'SOMOS FAMILIA - Apresto Laboral',                monto:15840000, prob:0.50,estado:'En curso'},
+    {mes:5,cliente:'Serveo',                   propuesta:'SOMOS FAMILIA - Emprendedores',                  monto:15840000, prob:0.50,estado:'En curso'},
+    {mes:5,cliente:'LyD',                      propuesta:'Programa Contabilidad 3 niveles',                monto:1892000,  prob:0.25,estado:'En curso'},
+    {mes:5,cliente:'LyD',                      propuesta:'Office 365',                                     monto:330000,   prob:1.00,estado:'Ganada'},
+    {mes:5,cliente:'Municipalidad Valdivia',   propuesta:'Prog. Social Comunidades Preparadas',            monto:34500000, prob:0.25,estado:'En curso'},
+    {mes:6,cliente:'SERVEO',                   propuesta:'DNC con IA',                                     monto:4620000,  prob:0.25,estado:'En curso'},
+    {mes:6,cliente:'ARAMARK',                  propuesta:'Alfabetizacion Digital',                         monto:2760000,  prob:0.00,estado:'En curso'},
+    {mes:6,cliente:'BANOTIC',                  propuesta:'Prog. Social Sustentabilidad',                   monto:7920000,  prob:0.25,estado:'En curso'},
+    {mes:6,cliente:'SERVEO',                   propuesta:'Liderazgo DISC',                                 monto:1584000,  prob:0.50,estado:'En curso'},
+    {mes:6,cliente:'Gendarmeria Antofagasta',  propuesta:'Prog. Social Manipulacion de Alimentos',         monto:11088000, prob:0.25,estado:'En curso'},
+    {mes:6,cliente:'Gendarmeria Tocopilla',    propuesta:'Programa Social Oficio',                         monto:9240000,  prob:0.25,estado:'En curso'},
+    {mes:6,cliente:'Albemarle',                propuesta:'Prog. Social Alfabetizacion Digital Paine',      monto:8200000,  prob:0.50,estado:'En curso'},
+  ],
+
+    semanas: {
+    // semana: {reu, prop, pros, cierres}
+    1:{reu:3,prop:0,pros:0,cierres:0},
+    2:{reu:0,prop:0,pros:0,cierres:0},
+    3:{reu:0,prop:0,pros:0,cierres:0},
+    4:{reu:0,prop:0,pros:0,cierres:0},
+  }
+};
+
+// ════════════════════════════════════════════════════════════
+// HELPERS
+// ════════════════════════════════════════════════════════════
+let mesActual = 6;
+
+function fmt(n){ if(!n&&n!==0)return '—'; return '$'+Math.round(n).toLocaleString('es-CL'); }
+function fmtN(n){ return n?.toLocaleString('es-CL')||'0'; }
+function mesDeReunion(r){ return parseInt(r.fecha.split('-')[1]); }
+function anioDe(r){ return parseInt(r.fecha.split('-')[0]); }
+
+function getReunionesDelMes(m){ return DATA.reuniones.filter(r=>mesDeReunion(r)===m&&anioDe(r)===2026); }
+function getFacturadoDelMes(m){ return DATA.facturacion.filter(f=>f.mes===m&&f.estado==='Facturado').reduce((s,f)=>s+f.facturado,0); }
+function getPropuestasDelMes(m){ return DATA.propuestas[m]||{enviadas:0,ganadas:0}; }
+
+function pct(v,meta){ return Math.min(Math.round(v/meta*100),100); }
+function pctLabel(v,meta){
+  const p=Math.round(v/meta*100);
+  if(p>=100) return {cls:'ok',txt:'✅ '+p+'% — ¡Meta cumplida!'};
+  if(p>=70)  return {cls:'warn',txt:'⚠️ '+p+'% — En camino'};
+  return      {cls:'bad',txt:'🔴 '+p+'% — Por debajo'};
+}
+
+// ════════════════════════════════════════════════════════════
+// TABS
+// ════════════════════════════════════════════════════════════
+function showTab(id){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  event.target.classList.add('active');
+  if(id==='resumen') renderResumen();
+  if(id==='reuniones') renderReuTable();
+  if(id==='facturacion') renderFacturacion();
+  if(id==='prospectos') renderProspectos();
+  if(id==='semanal') renderSemanal();
+  if(id==='consolidado') renderConsolidado();
+}
+
+function setMes(m){
+  mesActual=m;
+  document.querySelectorAll('.month-btn').forEach((b,i)=>b.classList.toggle('active',i+1===m));
+  renderResumen();
+}
+
+// ════════════════════════════════════════════════════════════
+// RESUMEN
+// ════════════════════════════════════════════════════════════
+function renderResumen(){
+  const reu  = getReunionesDelMes(mesActual).length;
+  const fact = getFacturadoDelMes(mesActual);
+  const prop = getPropuestasDelMes(mesActual);
+  const env  = prop.enviadas, gan = prop.ganadas, montoProp = prop.monto||0;
+  const tasa = env>0 ? Math.round(gan/env*100) : 0;
+  const metaMontoProp = 50000000; // meta referencial monto propuestas mes
+
+  // All factured
+  const allFact = DATA.facturacion.filter(f=>f.estado==='Facturado');
+  const totalFact = allFact.reduce((s,f)=>s+f.facturado,0);
+  const allGan = Object.values(DATA.propuestas).reduce((s,p)=>s+p.ganadas,0);
+  const ticket = allGan>0 ? Math.round(totalFact/allGan) : 0;
+
+  // KPI cards
+  setText('kpi-reu', reu);
+  setText('kpi-prop', env);
+  setText('kpi-gan', gan);
+  setText('kpi-fact', fact>=1e6 ? '$'+(fact/1e6).toFixed(1)+'M' : fmt(fact));
+  setText('kpi-tasa', tasa+'%');
+  setText('kpi-ticket', ticket>=1e6 ? '$'+(ticket/1e6).toFixed(1)+'M' : fmt(ticket));
+  setText('kpi-monto-prop', montoProp>=1e6 ? '$'+(montoProp/1e6).toFixed(1)+'M' : fmt(montoProp));
+
+  // Badges
+  const rb=pctLabel(reu,METAS.reu), pb=pctLabel(env,METAS.prop), gb=pctLabel(gan,METAS.cierres), fb=pctLabel(fact,METAS.venta);
+  setBadge('badge-reu',rb); setBadge('badge-prop',pb); setBadge('badge-gan',gb); setBadge('badge-fact',fb);
+  setBadge('badge-tasa', tasa>=33?{cls:'ok',txt:'✅ Buena tasa'}:tasa>=20?{cls:'warn',txt:'⚠️ Mejorable'}:{cls:'bad',txt:'🔴 Baja tasa'});
+  const mp=pctLabel(montoProp,metaMontoProp);
+  setBadge('badge-monto-prop',{cls:mp.cls,txt:mp.txt});
+  setBar('bar-monto-prop',pct(montoProp,metaMontoProp));
+
+  // Bars
+  setBar('bar-reu',pct(reu,METAS.reu));
+  setBar('bar-prop',pct(env,METAS.prop));
+  setBar('bar-gan',pct(gan,METAS.cierres));
+  setBar('bar-fact',pct(fact,METAS.venta));
+
+  // Alerts
+  const alerts=[];
+  if(fact<METAS.venta*0.5&&mesActual===6) alerts.push({cls:'warn',txt:`⚠️ Facturación de Junio: ${fmt(fact)} — Es el inicio del mes, pero arranquemos fuerte.`});
+  if(fact>=METAS.venta)                   alerts.push({cls:'ok',  txt:`🎉 Meta de venta cumplida en ${MESES_NOM[mesActual]}: ${fmt(fact)} facturados.`});
+  if(reu>=METAS.reu)                      alerts.push({cls:'ok',  txt:`✅ Meta de reuniones cumplida: ${reu} en ${MESES_NOM[mesActual]}.`});
+  if(reu<METAS.reu&&mesActual<=6)         alerts.push({cls:'info',txt:`📅 ${MESES_NOM[mesActual]}: ${reu} reuniones realizadas. Meta: ${METAS.reu}.`});
+  document.getElementById('alert-box').innerHTML = alerts.map(a=>`<div class="alert ${a.cls}">${a.txt}</div>`).join('');
+
+  // Charts
+  renderChartReu();
+  renderChartFact();
+  renderFunnel(reu,env,gan,fact);
+  renderAcumulado();
+}
+
+function setText(id,v){ const el=document.getElementById(id); if(el) el.textContent=v; }
+function setBadge(id,b){ const el=document.getElementById(id); if(el){el.className='badge '+b.cls; el.textContent=b.txt;} }
+function setBar(id,p){ const el=document.getElementById(id); if(el) el.style.width=p+'%'; }
+
+function renderChartReu(){
+  const meses=[1,2,3,4,5,6];
+  const max=Math.max(...meses.map(m=>getReunionesDelMes(m).length),METAS.reu);
+  document.getElementById('chart-reuniones').innerHTML = meses.map(m=>{
+    const v=getReunionesDelMes(m).length;
+    const w=Math.round(v/max*100);
+    const col=v>=METAS.reu?'var(--green)':v>=METAS.reu*.7?'var(--orange)':'var(--blue)';
+    return `<div class="chart-row">
+      <div class="chart-label">${MESES_NOM[m].substring(0,3)}</div>
+      <div class="chart-bar-bg"><div class="chart-bar-fill" style="width:${w}%;background:${col}">${v>0?v:''}</div></div>
+      <div class="chart-val">${v} reu.</div>
+      <div class="chart-meta">${v>=METAS.reu?'✅':''}Meta:${METAS.reu}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderChartFact(){
+  const meses=[1,2,3,4,5,6];
+  const vals=meses.map(m=>getFacturadoDelMes(m));
+  const max=Math.max(...vals,METAS.venta);
+  document.getElementById('chart-facturacion').innerHTML = meses.map((m,i)=>{
+    const v=vals[i];
+    const w=Math.round(v/max*100);
+    const col=v>=METAS.venta?'var(--green)':v>=METAS.venta*.7?'var(--yellow)':'var(--sky)';
+    const txt=v>=1e6?(v/1e6).toFixed(1)+'M':v>0?Math.round(v/1000)+'K':'—';
+    return `<div class="chart-row">
+      <div class="chart-label">${MESES_NOM[m].substring(0,3)}</div>
+      <div class="chart-bar-bg"><div class="chart-bar-fill" style="width:${w}%;background:${col}">${v>0?'$'+txt:''}</div></div>
+      <div class="chart-val">$${txt}</div>
+      <div class="chart-meta">${v>=METAS.venta?'✅':''}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderFunnel(reu,prop,gan,fact){
+  const max=Math.max(reu,METAS.reu,1);
+  const rows=[
+    {label:'Reuniones',v:reu,meta:METAS.reu,col:'var(--blue)'},
+    {label:'Propuestas',v:prop,meta:METAS.prop,col:'var(--orange)'},
+    {label:'Ganadas',v:gan,meta:METAS.cierres,col:'var(--green)'},
+  ];
+  document.getElementById('funnel-mes').innerHTML = rows.map(r=>{
+    const w=Math.round(r.v/Math.max(reu,1)*100);
+    return `<div class="funnel-row">
+      <div class="funnel-label">${r.label}</div>
+      <div class="funnel-bar-wrap"><div class="funnel-fill" style="width:${Math.max(w,5)}%;background:${r.col}">${r.v}</div></div>
+      <div class="funnel-pct">/${r.meta}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderAcumulado(){
+  const mesesHasta=mesActual;
+  let totReu=0,totProp=0,totGan=0,totFact=0;
+  for(let m=1;m<=mesesHasta;m++){
+    totReu+=getReunionesDelMes(m).length;
+    const p=getPropuestasDelMes(m);
+    totProp+=p.enviadas; totGan+=p.ganadas;
+    totFact+=getFacturadoDelMes(m);
+  }
+  const metaReu=METAS.reu*mesesHasta, metaProp=METAS.prop*mesesHasta, metaGan=METAS.cierres*mesesHasta, metaFact=METAS.venta*mesesHasta;
+  document.getElementById('acumulado-panel').innerHTML=`
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      ${acu('📅 Reuniones',totReu,metaReu,'')}
+      ${acu('📄 Propuestas',totProp,metaProp,'')}
+      ${acu('🏆 Cierres',totGan,metaGan,'')}
+      ${acu('💰 Facturado',totFact,metaFact,'$')}
+    </div>`;
+}
+
+function acu(label,v,meta,pfx){
+  const p=Math.min(Math.round(v/meta*100),999);
+  const col=p>=100?'var(--green)':p>=70?'var(--orange)':'var(--red)';
+  const vfmt=pfx==='$'?(v/1e6).toFixed(1)+'M':v;
+  const mfmt=pfx==='$'?(meta/1e6).toFixed(1)+'M':meta;
+  return `<div>
+    <div style="display:flex;justify-content:space-between;margin-bottom:3px;">
+      <span style="font-size:12px;color:var(--gray)">${label}</span>
+      <span style="font-size:12px;font-weight:700;color:${col}">${pfx}${vfmt} / ${pfx}${mfmt} (${p}%)</span>
+    </div>
+    <div style="background:#EDF2F7;border-radius:5px;height:8px;"><div style="height:8px;border-radius:5px;width:${Math.min(p,100)}%;background:${col};transition:width .6s"></div></div>
+  </div>`;
+}
+
+// ════════════════════════════════════════════════════════════
+// REUNIONES TAB
+// ════════════════════════════════════════════════════════════
+function addReunion(){
+  const fecha=document.getElementById('r-fecha').value;
+  const empresa=document.getElementById('r-empresa').value.trim();
+  if(!fecha||!empresa){alert('Ingresa al menos fecha y empresa'); return;}
+  DATA.reuniones.push({
+    fecha, empresa,
+    contacto: document.getElementById('r-contacto').value,
+    tema: document.getElementById('r-tema').value,
+    nuevo: document.getElementById('r-nuevo').value,
+    modal: document.getElementById('r-modal').value
+  });
+  ['r-fecha','r-empresa','r-contacto','r-tema'].forEach(id=>document.getElementById(id).value='');
+  renderReuTable();
+  renderReuStats();
+  saveToSheets();
+}
+
+function deleteReunion(idx){
+  if(confirm('¿Eliminar esta reunión?')){ DATA.reuniones.splice(idx,1); renderReuTable(); renderReuStats(); saveToSheets(); }
+}
+
+function renderReuTable(){
+  const filtroMes=parseInt(document.getElementById('reu-filtro-mes')?.value||0);
+  const list=DATA.reuniones
+    .map((r,i)=>({...r,_i:i}))
+    .filter(r=>filtroMes===0||mesDeReunion(r)===filtroMes);
+  document.getElementById('reu-tbody').innerHTML=list.map(r=>{
+    const esNuevo=r.nuevo?.toLowerCase()==='si'||r.nuevo?.toLowerCase()==='s';
+    return `<tr>
+      <td>${r.fecha}</td>
+      <td style="font-weight:600">${r.empresa}</td>
+      <td>${r.contacto||'—'}</td>
+      <td style="max-width:220px;font-size:11px">${r.tema||'—'}</td>
+      <td><span class="tag ${esNuevo?'new':'no'}">${esNuevo?'Nuevo':'Ya conocido'}</span></td>
+      <td><span style="font-size:11px">${r.modal||'—'}</span></td>
+      <td><button class="btn btn-danger" style="padding:3px 8px;font-size:11px" onclick="deleteReunion(${r._i})">✕</button></td>
+    </tr>`;
+  }).join('');
+  renderReuStats();
+}
+
+function renderReuStats(){
+  const por_mes={};
+  DATA.reuniones.forEach(r=>{if(anioDe(r)===2026){const m=mesDeReunion(r);por_mes[m]=(por_mes[m]||0)+1;}});
+  const nuevos=DATA.reuniones.filter(r=>['si','s'].includes((r.nuevo||'').toLowerCase())&&anioDe(r)===2026).length;
+  document.getElementById('reu-stats').innerHTML=`
+    <div class="pros-stat"><div class="n">${DATA.reuniones.filter(r=>anioDe(r)===2026).length}</div><div class="l">Total 2026</div></div>
+    <div class="pros-stat"><div class="n">${nuevos}</div><div class="l">Nuevos clientes</div></div>
+    <div class="pros-stat"><div class="n">${por_mes[mesActual]||0}</div><div class="l">Este mes (${MESES_NOM[mesActual]})</div></div>
+    <div class="pros-stat"><div class="n">${Math.max(...Object.values(por_mes),0)}</div><div class="l">Mejor mes</div></div>
+  `;
+}
+
+// ════════════════════════════════════════════════════════════
+// FACTURACIÓN TAB
+// ════════════════════════════════════════════════════════════
+function addFactura(){
+  const cliente=document.getElementById('f-cliente').value.trim();
+  const proyecto=document.getElementById('f-proyecto').value.trim();
+  if(!cliente||!proyecto){alert('Completa cliente y proyecto'); return;}
+  DATA.facturacion.push({
+    cliente, proyecto,
+    forecast: parseFloat(document.getElementById('f-forecast').value)||0,
+    facturado: parseFloat(document.getElementById('f-facturado').value)||0,
+    mes: parseInt(document.getElementById('f-mes').value),
+    estado: document.getElementById('f-estado').value
+  });
+  ['f-cliente','f-proyecto','f-forecast','f-facturado'].forEach(id=>document.getElementById(id).value='');
+  renderFacturacion();
+  saveToSheets();
+}
+
+function deleteFactura(idx){
+  if(confirm('¿Eliminar este proyecto?')){ DATA.facturacion.splice(idx,1); renderFacturacion(); }
+}
+
+function renderFacturacion(){
+  renderPropuestasTable();
+  const sorted=[...DATA.facturacion].sort((a,b)=>a.mes-b.mes);
+  let totF=0,totFact=0;
+  document.getElementById('fact-tbody').innerHTML=sorted.map((f,i)=>{
+    totF+=f.forecast; totFact+=(f.facturado||0);
+    const cls=f.estado==='Facturado'?'fact':f.estado==='Forecast'?'fore':'pend';
+    return `<tr>
+      <td>${MESES_NOM[f.mes]||'—'}</td>
+      <td style="font-weight:600">${f.cliente}</td>
+      <td style="font-size:11.5px">${f.proyecto}</td>
+      <td>${fmt(f.forecast)}</td>
+      <td style="font-weight:600;color:var(--green)">${fmt(f.facturado)}</td>
+      <td><span class="tag ${cls}">${f.estado}</span></td>
+      <td><button class="btn btn-danger" style="padding:3px 8px;font-size:11px" onclick="deleteFactura(${DATA.facturacion.indexOf(f)})">✕</button></td>
+    </tr>`;
+  }).join('');
+  document.getElementById('total-forecast').textContent=fmt(totF);
+  document.getElementById('total-facturado').textContent=fmt(totFact);
+
+  const totFacSolo=DATA.facturacion.filter(f=>f.estado==='Facturado').reduce((s,f)=>s+(f.facturado||0),0);
+  const totFore=DATA.facturacion.filter(f=>f.estado==='Forecast').reduce((s,f)=>s+f.forecast,0);
+  document.getElementById('fact-resumen').innerHTML=`
+    <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px;">
+      ${acu('💰 Total facturado',totFacSolo,METAS.venta*6,'$')}
+      <div class="meta-line"><span class="dot" style="background:var(--yellow)"></span><span>Forecast pendiente: <strong>${fmt(totFore)}</strong></span></div>
+      <div class="meta-line"><span class="dot" style="background:var(--blue)"></span><span>Proyectos activos: <strong>${DATA.facturacion.length}</strong></span></div>
+      <div class="meta-line"><span class="dot" style="background:var(--green)"></span><span>Proyectos facturados: <strong>${DATA.facturacion.filter(f=>f.estado==='Facturado').length}</strong></span></div>
+    </div>`;
+}
+
+// ════════════════════════════════════════════════════════════
+// PROSPECTOS TAB
+// ════════════════════════════════════════════════════════════
+function addProspecto(){
+  const empresa=document.getElementById('pr-empresa').value.trim();
+  if(!empresa){alert('Ingresa nombre de empresa'); return;}
+  DATA.prospectos.push({
+    empresa, contacto: document.getElementById('pr-contacto').value,
+    email: document.getElementById('pr-email').value,
+    rubro: document.getElementById('pr-rubro').value,
+    fuente: document.getElementById('pr-fuente').value,
+    fecha1: new Date().toISOString().split('T')[0], fecha2:'', notas:''
+  });
+  ['pr-empresa','pr-contacto','pr-email','pr-rubro'].forEach(id=>document.getElementById(id).value='');
+  renderProspectos();
+  saveToSheets();
+}
+
+function deleteProspecto(idx){
+  if(confirm('¿Eliminar este prospecto?')){ DATA.prospectos.splice(idx,1); renderProspectos(); }
+}
+
+function marcar2do(idx){
+  DATA.prospectos[idx].fecha2=new Date().toISOString().split('T')[0];
+  renderProspectos();
+}
+
+function renderProspectos(){
+  const total=DATA.prospectos.length;
+  const con1=DATA.prospectos.filter(p=>p.fecha1).length;
+  const con2=DATA.prospectos.filter(p=>p.fecha2).length;
+  // "nuevos esta semana" = fecha1 en los últimos 7 dias
+  const hoy=new Date();
+  const nuevos=DATA.prospectos.filter(p=>{
+    if(!p.fecha1)return false;
+    const d=new Date(p.fecha1);
+    return (hoy-d)<=7*24*3600*1000;
+  }).length;
+
+  setText('p-total',total); setText('p-1c',con1); setText('p-2c',con2); setText('p-new',nuevos);
+
+  // Chart por fuente
+  const fuentes={};
+  DATA.prospectos.forEach(p=>{ fuentes[p.fuente]=(fuentes[p.fuente]||0)+1; });
+  const maxF=Math.max(...Object.values(fuentes),1);
+  const colF={'DEI/Social':'var(--blue)','Construcción':'var(--orange)','Prospección propia':'var(--green)','Referido':'var(--purple)'};
+  document.getElementById('chart-prospectos').innerHTML=Object.entries(fuentes).map(([k,v])=>`
+    <div class="chart-row">
+      <div class="chart-label" style="width:100px;font-size:11px">${k}</div>
+      <div class="chart-bar-bg"><div class="chart-bar-fill" style="width:${Math.round(v/maxF*100)}%;background:${colF[k]||'var(--blue)'}">${v}</div></div>
+      <div class="chart-val">${v}</div>
+    </div>`).join('');
+
+  // Estado panel
+  document.getElementById('pros-estado').innerHTML=`
+    <div class="alert info">👥 Total prospectos: <strong>${total}</strong> (DEI: ${fuentes['DEI/Social']||0} · Construcción: ${fuentes['Construcción']||0})</div>
+    <div class="alert ${nuevos>=10?'ok':'warn'}">📅 Nuevos esta semana: <strong>${nuevos}</strong> — Meta: 10/semana</div>
+    <div class="alert ${con2>=5?'ok':'info'}">🔄 Con 2do contacto: <strong>${con2}</strong> de ${con1} (${con1>0?Math.round(con2/con1*100):0}%)</div>
+    <div class="alert warn">🎯 Pendiente reunion: <strong>${con1-con2}</strong> prospectos en 1er contacto sin seguimiento</div>`;
+
+  // Table
+  const filtro=document.getElementById('pr-filtro')?.value||'';
+  const list=DATA.prospectos.filter(p=>!filtro||p.fuente===filtro);
+  document.getElementById('pros-tbody').innerHTML=list.map((p,i)=>{
+    const estado=p.fecha2?'🟢 2do contacto':p.fecha1?'🟡 1er contacto':'⚪ Sin contacto';
+    return `<tr>
+      <td style="font-size:11px;color:var(--gray)">${i+1}</td>
+      <td style="font-weight:600;font-size:12px">${p.empresa}</td>
+      <td style="font-size:12px">${p.contacto||'—'}</td>
+      <td style="font-size:11px;color:var(--sky)">${p.email||'—'}</td>
+      <td><span style="font-size:10px;color:var(--gray)">${p.fuente}</span></td>
+      <td style="font-size:11px">${p.fecha1||'—'}</td>
+      <td style="font-size:11px">${p.fecha2||'—'}</td>
+      <td style="font-size:11px">${estado}</td>
+      <td style="white-space:nowrap;">
+        ${!p.fecha2?`<button class="btn btn-yellow" style="padding:2px 6px;font-size:10px" onclick="marcar2do(${DATA.prospectos.indexOf(p)})">2do ✓</button>`:''}
+        <button class="btn btn-danger" style="padding:2px 6px;font-size:10px" onclick="deleteProspecto(${DATA.prospectos.indexOf(p)})">✕</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+// ════════════════════════════════════════════════════════════
+// SEMANA A SEMANA
+// ════════════════════════════════════════════════════════════
+function saveWeek(){
+  const sw=parseInt(document.getElementById('sw-semana').value);
+  DATA.semanas[sw]={
+    reu: parseInt(document.getElementById('sw-reu').value)||0,
+    prop: parseInt(document.getElementById('sw-prop').value)||0,
+    pros: parseInt(document.getElementById('sw-pros').value)||0,
+    cierres: parseInt(document.getElementById('sw-cierres').value)||0,
+  };
+  ['sw-reu','sw-prop','sw-pros','sw-cierres'].forEach(id=>document.getElementById(id).value='');
+  renderSemanal();
+  saveToSheets();
+}
+
+function renderSemanal(){
+  const semNames=['','2–8 Jun','9–15 Jun','16–22 Jun','23–30 Jun'];
+  // Week grid
+  document.getElementById('week-grid').innerHTML=[1,2,3,4].map(sw=>{
+    const d=DATA.semanas[sw]||{reu:0,prop:0,pros:0,cierres:0};
+    const isCurr=sw===1; // Week 1 is current
+    const preu=Math.min(Math.round(d.reu/5*100),100);
+    const col=d.reu>=5?'var(--green)':d.reu>=3?'var(--orange)':'var(--red)';
+    return `<div class="week-box${isCurr?' current':''}">
+      <div class="wk">Sem ${sw} · ${semNames[sw]}</div>
+      <div class="wnum" style="color:${col}">${d.reu}</div>
+      <div class="wtot">reuniones / meta 5</div>
+      <div class="wbar"><div class="wfill" style="width:${preu}%;background:${col}"></div></div>
+      <div style="margin-top:8px;font-size:10px;color:var(--gray)">📄 ${d.prop} prop · 👥 ${d.pros} prosp · 🏆 ${d.cierres} cierres</div>
+    </div>`;
+  }).join('');
+
+  // Table
+  document.getElementById('semana-tbody').innerHTML=[1,2,3,4].map(sw=>{
+    const d=DATA.semanas[sw]||{reu:0,prop:0,pros:0,cierres:0};
+    const rOk=d.reu>=5,pOk=d.prop>=2,prosOk=d.pros>=10;
+    return `<tr>
+      <td style="font-weight:600">Sem ${sw} · ${semNames[sw]}</td>
+      <td style="font-size:16px;font-weight:700;color:${rOk?'var(--green)':'var(--dgray)'}">${d.reu}</td>
+      <td><span class="tag ${rOk?'si':'no'}">${rOk?'✅ OK':'❌ '+d.reu+'/5'}</span></td>
+      <td style="font-size:16px;font-weight:700">${d.prop}</td>
+      <td><span class="tag ${pOk?'si':'no'}">${pOk?'✅ OK':'❌ '+d.prop+'/2'}</span></td>
+      <td style="font-size:16px;font-weight:700">${d.pros}</td>
+      <td><span class="tag ${prosOk?'si':'no'}">${prosOk?'✅ OK':'❌ '+d.pros+'/10'}</span></td>
+      <td style="font-size:16px;font-weight:700;color:var(--green)">${d.cierres}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ════════════════════════════════════════════════════════════
+// PROPUESTAS PRESENTADAS
+// ════════════════════════════════════════════════════════════
+function addPropuesta(){
+  const cliente=document.getElementById('pp-cliente').value.trim();
+  const propuesta=document.getElementById('pp-propuesta').value.trim();
+  if(!cliente||!propuesta){alert('Completa cliente y propuesta'); return;}
+  const mes=parseInt(document.getElementById('pp-mes').value);
+  const monto=parseFloat(document.getElementById('pp-monto').value)||0;
+  DATA.propuestasDetalle.push({mes, cliente, propuesta, monto,
+    prob:parseFloat(document.getElementById('pp-prob').value), estado:'En curso'});
+  // Update summary count and monto for that month
+  if(!DATA.propuestas[mes]) DATA.propuestas[mes]={enviadas:0,ganadas:0,monto:0};
+  DATA.propuestas[mes].enviadas++;
+  DATA.propuestas[mes].monto=(DATA.propuestas[mes].monto||0)+monto;
+  ['pp-cliente','pp-propuesta','pp-monto'].forEach(id=>document.getElementById(id).value='');
+  renderPropuestasTable();
+  renderResumen();
+}
+
+function deletePropuesta(idx){
+  if(!confirm('¿Eliminar esta propuesta?')) return;
+  const p=DATA.propuestasDetalle[idx];
+  if(DATA.propuestas[p.mes]){
+    DATA.propuestas[p.mes].enviadas=Math.max(0,DATA.propuestas[p.mes].enviadas-1);
+    DATA.propuestas[p.mes].monto=Math.max(0,(DATA.propuestas[p.mes].monto||0)-p.monto);
+  }
+  DATA.propuestasDetalle.splice(idx,1);
+  renderPropuestasTable();
+  renderResumen();
+}
+
+function toggleGanada(idx){
+  const p=DATA.propuestasDetalle[idx];
+  if(p.estado==='Ganada'){
+    p.estado='En curso'; p.prob=0.50;
+    if(DATA.propuestas[p.mes]) DATA.propuestas[p.mes].ganadas=Math.max(0,DATA.propuestas[p.mes].ganadas-1);
+  } else {
+    p.estado='Ganada'; p.prob=1.00;
+    if(DATA.propuestas[p.mes]) DATA.propuestas[p.mes].ganadas=(DATA.propuestas[p.mes].ganadas||0)+1;
+  }
+  renderPropuestasTable();
+  renderResumen();
+}
+
+function renderPropuestasTable(){
+  const filtro=parseInt(document.getElementById('pp-filtro-mes')?.value||0);
+  const list=DATA.propuestasDetalle
+    .map((p,i)=>({...p,_i:i}))
+    .filter(p=>filtro===0||p.mes===filtro);
+  let total=0;
+  document.getElementById('pp-tbody').innerHTML=list.map(p=>{
+    total+=p.monto||0;
+    const probPct=Math.round(p.prob*100);
+    const probCol=p.prob>=0.75?'var(--green)':p.prob>=0.5?'var(--orange)':'var(--gray)';
+    return '<tr>'
+      +'<td>'+MESES_NOM[p.mes]+'</td>'
+      +'<td style="font-weight:600">'+p.cliente+'</td>'
+      +'<td style="font-size:11.5px">'+p.propuesta+'</td>'
+      +'<td style="font-weight:600">'+fmt(p.monto)+'</td>'
+      +'<td><span style="font-weight:700;color:'+probCol+'">'+probPct+'%</span></td>'
+      +'<td><span class="tag '+(p.estado==='Ganada'?'fact':'fore')+'">'+p.estado+'</span></td>'
+      +'<td style="white-space:nowrap">'
+      +(p.estado!=='Ganada'?'<button class="btn btn-yellow" style="padding:2px 7px;font-size:10px" onclick="toggleGanada('+p._i+')">✓ Ganada</button> ':'')
+      +'<button class="btn btn-danger" style="padding:2px 6px;font-size:10px" onclick="deletePropuesta('+p._i+')">✕</button>'
+      +'</td></tr>';
+  }).join('');
+  const el=document.getElementById('pp-total');
+  if(el) el.textContent=fmt(total);
+  const res=document.getElementById('pp-resumen-inline');
+  if(res){
+    const ganadas=list.filter(p=>p.estado==='Ganada').length;
+    const montoGanado=list.filter(p=>p.estado==='Ganada').reduce((s,p)=>s+p.monto,0);
+    res.innerHTML='<span style="color:var(--gray)">'+list.length+' propuestas · '+fmt(total)+' presentado</span>'
+      +'<span style="color:var(--green);margin-left:12px">'+ganadas+' ganadas · '+fmt(montoGanado)+'</span>';
+  }
+}
+
+// ════════════════════════════════════════════════════════════
+// CONSOLIDADO
+// ════════════════════════════════════════════════════════════
+function semaforo(pct){
+  if(pct>=100) return '<span style="color:var(--green);font-weight:800">✅ '+pct+'%</span>';
+  if(pct>=70)  return '<span style="color:var(--orange);font-weight:800">⚠️ '+pct+'%</span>';
+  return              '<span style="color:var(--red);font-weight:800">🔴 '+pct+'%</span>';
+}
+function semBg(pct){
+  if(pct>=100) return '#D5F5E3';
+  if(pct>=70)  return '#FDEBD0';
+  return              '#FADBD8';
+}
+
+function renderConsolidado(){
+  const MESES_ACTIVOS = [1,2,3,4,5,6]; // meses con datos
+  const META_ANUAL_REU   = METAS.reu   * 12;
+  const META_ANUAL_PROP  = METAS.prop  * 12;
+  const META_ANUAL_CIERR = METAS.cierres * 12;
+  const META_ANUAL_FACT  = METAS.venta * 12;
+
+  let totReu=0, totProp=0, totCierr=0, totFact=0, totMontoProp=0;
+  let rows = '';
+
+  MESES_ACTIVOS.forEach(m => {
+    const reu   = getReunionesDelMes(m).length;
+    const prop  = getPropuestasDelMes(m);
+    const env   = prop.enviadas || 0;
+    const gan   = prop.ganadas  || 0;
+    const mont  = prop.monto    || 0;
+    const fact  = getFacturadoDelMes(m);
+
+    const pReu  = Math.round(reu /METAS.reu  *100);
+    const pProp = Math.round(env /METAS.prop *100);
+    const pCierr= Math.round(gan /METAS.cierres*100);
+    const pFact = Math.round(fact/METAS.venta*100);
+
+    totReu+=reu; totProp+=env; totCierr+=gan; totFact+=fact; totMontoProp+=mont;
+
+    const isFuture = fact===0 && env===0 && reu===0 && m>6;
+    if(isFuture) return;
+
+    rows += `<tr style="background:white">
+      <td style="font-weight:700;color:var(--navy)">${MESES_NOM[m]}</td>
+      <td style="text-align:center;font-weight:700">${reu}</td>
+      <td style="text-align:center;color:var(--gray);font-size:11px">${METAS.reu}</td>
+      <td style="text-align:center;background:${semBg(pReu)};border-radius:4px">${semaforo(pReu)}</td>
+      <td style="text-align:center;font-weight:700">${env}</td>
+      <td style="text-align:center;color:var(--gray);font-size:11px">${METAS.prop}</td>
+      <td style="text-align:center;background:${semBg(pProp)};border-radius:4px">${semaforo(pProp)}</td>
+      <td style="text-align:center;font-weight:700">${gan}</td>
+      <td style="text-align:center;color:var(--gray);font-size:11px">${METAS.cierres}</td>
+      <td style="text-align:center;background:${semBg(pCierr)};border-radius:4px">${semaforo(pCierr)}</td>
+      <td style="text-align:center;font-weight:700;color:var(--green)">${fact>=1e6?'$'+(fact/1e6).toFixed(1)+'M':fmt(fact)}</td>
+      <td style="text-align:center;color:var(--gray);font-size:11px">$25M</td>
+      <td style="text-align:center;background:${semBg(pFact)};border-radius:4px">${semaforo(pFact)}</td>
+      <td style="text-align:center;font-size:11px;color:var(--purple);font-weight:600">${mont>=1e6?'$'+(mont/1e6).toFixed(1)+'M':mont>0?fmt(mont):'—'}</td>
+    </tr>`;
+  });
+
+  document.getElementById('consolidado-tbody').innerHTML = rows;
+
+  // TOTALES FILA
+  const mesesConDatos = MESES_ACTIVOS.length;
+  const metaAcumReu   = METAS.reu      * mesesConDatos;
+  const metaAcumProp  = METAS.prop     * mesesConDatos;
+  const metaAcumCierr = METAS.cierres  * mesesConDatos;
+  const metaAcumFact  = METAS.venta    * mesesConDatos;
+  const pTR=Math.round(totReu/metaAcumReu*100);
+  const pTP=Math.round(totProp/metaAcumProp*100);
+  const pTC=Math.round(totCierr/metaAcumCierr*100);
+  const pTF=Math.round(totFact/metaAcumFact*100);
+
+  document.getElementById('consolidado-tfoot').innerHTML =
+    `<td style="color:var(--navy)">ACUMULADO Ene–Jun</td>
+     <td style="text-align:center">${totReu}</td>
+     <td style="text-align:center;font-size:11px;color:var(--gray)">${metaAcumReu}</td>
+     <td style="text-align:center">${semaforo(pTR)}</td>
+     <td style="text-align:center">${totProp}</td>
+     <td style="text-align:center;font-size:11px;color:var(--gray)">${metaAcumProp}</td>
+     <td style="text-align:center">${semaforo(pTP)}</td>
+     <td style="text-align:center">${totCierr}</td>
+     <td style="text-align:center;font-size:11px;color:var(--gray)">${metaAcumCierr}</td>
+     <td style="text-align:center">${semaforo(pTC)}</td>
+     <td style="text-align:center;color:var(--green)">${(totFact/1e6).toFixed(1)}M</td>
+     <td style="text-align:center;font-size:11px;color:var(--gray)">${(metaAcumFact/1e6).toFixed(0)}M</td>
+     <td style="text-align:center">${semaforo(pTF)}</td>
+     <td style="text-align:center;color:var(--purple)">${(totMontoProp/1e6).toFixed(1)}M</td>`;
+
+  // ── META ANUAL CARDS ──
+  const metaAnualCards = [
+    {label:'📅 Reuniones',    real:totReu,   meta:META_ANUAL_REU,   unit:'',   col:'var(--blue)'},
+    {label:'📄 Propuestas',   real:totProp,  meta:META_ANUAL_PROP,  unit:'',   col:'var(--orange)'},
+    {label:'🏆 Cierres',      real:totCierr, meta:META_ANUAL_CIERR, unit:'',   col:'var(--green)'},
+    {label:'💰 Facturación',  real:totFact,  meta:META_ANUAL_FACT,  unit:'$M', col:'var(--yellow)'},
+  ];
+
+  document.getElementById('meta-anual-grid').innerHTML = metaAnualCards.map(c=>{
+    const p = Math.min(Math.round(c.real/c.meta*100),999);
+    const col = p>=100?'var(--green)':p>=70?'var(--orange)':'var(--red)';
+    const rFmt = c.unit==='$M' ? '$'+(c.real/1e6).toFixed(1)+'M' : c.real;
+    const mFmt = c.unit==='$M' ? '$'+(c.meta/1e6).toFixed(0)+'M' : c.meta;
+    return `<div style="background:var(--off);border-radius:12px;padding:16px;border-left:4px solid ${c.col}">
+      <div style="font-size:11px;font-weight:700;color:var(--gray);text-transform:uppercase;margin-bottom:6px">${c.label}</div>
+      <div style="font-size:26px;font-weight:800;color:var(--navy)">${rFmt}</div>
+      <div style="font-size:11px;color:var(--gray);margin:4px 0">de ${mFmt} meta anual</div>
+      <div style="background:#E0E7EF;border-radius:5px;height:7px;margin:8px 0 6px">
+        <div style="height:7px;border-radius:5px;width:${Math.min(p,100)}%;background:${col};transition:width .6s"></div>
+      </div>
+      <div style="font-size:12px;font-weight:700;color:${col}">${p}% completado · faltan ${mFmt.replace('$','').replace('M','')*1 > 0 ? '' : ''}${c.unit==='$M'?'$'+((c.meta-c.real)/1e6).toFixed(1)+'M':(c.meta-c.real)>0?(c.meta-c.real)+' más':'¡Meta superada!'}</div>
+    </div>`;
+  }).join('');
+
+  // ── BARRA META ANUAL DETALLADA ──
+  const mesesRestantes = 12 - mesesConDatos;
+  document.getElementById('meta-anual-bars').innerHTML = `
+    <div style="background:var(--off);border-radius:10px;padding:14px 16px;">
+      <div style="font-size:12px;font-weight:700;color:var(--navy);margin-bottom:10px">
+        📆 Proyección año completo — quedan <strong>${mesesRestantes} meses</strong> (Jul–Dic)
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        ${barAnual('💰 Facturación anual', totFact, META_ANUAL_FACT, METAS.venta, mesesRestantes, '$M')}
+        ${barAnual('📅 Reuniones anuales', totReu, META_ANUAL_REU, METAS.reu, mesesRestantes, '')}
+        ${barAnual('📄 Propuestas anuales', totProp, META_ANUAL_PROP, METAS.prop, mesesRestantes, '')}
+        ${barAnual('🏆 Cierres anuales', totCierr, META_ANUAL_CIERR, METAS.cierres, mesesRestantes, '')}
+      </div>
+    </div>`;
+}
+
+function barAnual(label, real, metaAnual, metaMes, mesesRest, unit){
+  const p = Math.min(Math.round(real/metaAnual*100), 100);
+  const col = p>=100?'var(--green)':p>=50?'var(--orange)':'var(--red)';
+  const falta = Math.max(metaAnual - real, 0);
+  const necesitaMes = mesesRest>0 ? Math.ceil(falta/mesesRest) : 0;
+  const rFmt = unit==='$M'?'$'+(real/1e6).toFixed(1)+'M':String(real);
+  const mFmt = unit==='$M'?'$'+(metaAnual/1e6).toFixed(0)+'M':String(metaAnual);
+  const nFmt = unit==='$M'?'$'+(necesitaMes/1e6).toFixed(1)+'M/mes':necesitaMes+'/mes';
+  return `<div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+      <span style="font-size:12px;color:var(--dgray);font-weight:600">${label}</span>
+      <span style="font-size:12px;color:var(--gray)">${rFmt} / ${mFmt}
+        <strong style="color:${col};margin-left:6px">${p}%</strong>
+        <span style="color:var(--blue);margin-left:8px;font-size:11px">Necesitas ${nFmt} para cumplir</span>
+      </span>
+    </div>
+    <div style="background:#E0E7EF;border-radius:5px;height:10px;position:relative;">
+      <div style="height:10px;border-radius:5px;width:${p}%;background:${col};transition:width .8s"></div>
+      <div style="position:absolute;top:0;left:50%;width:2px;height:10px;background:var(--gray);opacity:.4"></div>
+    </div>
+    <div style="font-size:10px;color:var(--gray);margin-top:2px">Marca 50% del año</div>
+  </div>`;
+}
+
+// ════════════════════════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════════════════════════
+
+
+// ── AUTO LOAD ON STARTUP ────────────────────────────────
+async function initPanel() {
+  // Show loading overlay
+  document.body.insertAdjacentHTML('afterbegin',
+    '<div id="lo" style="position:fixed;top:0;left:0;width:100%;height:100%;' +
+    'background:rgba(11,45,94,0.95);z-index:9999;display:flex;flex-direction:column;' +
+    'align-items:center;justify-content:center;gap:16px;">' +
+    '<div style="color:#D4E600;font-size:28px;font-weight:800;">📊 Panel Comercial · Julieta</div>' +
+    '<div style="color:white;font-size:15px;">Cargando datos desde Google Sheets...</div>' +
+    '<div style="width:220px;height:7px;background:rgba(255,255,255,.2);border-radius:4px;overflow:hidden;">' +
+    '<div id="lb" style="height:7px;background:#D4E600;border-radius:4px;width:0%;transition:width 2.5s ease"></div>' +
+    '</div>' +
+    '<div style="color:#9EC5E8;font-size:12px;">Un momento por favor...</div>' +
+    '</div>');
+  setTimeout(function(){ var b=document.getElementById('lb'); if(b) b.style.width='85%'; }, 200);
+  try { await loadFromSheets(); } catch(e) { console.error(e); }
+  var ov=document.getElementById('lo'); if(ov) ov.remove();
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('fecha-hoy').textContent = new Date().toLocaleDateString('es-CL',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  setMes(6);
+  renderReuStats();
+  renderFacturacion();
+  renderPropuestasTable();
+  renderProspectos();
+  renderSemanal();
+  renderConsolidado();
+  // Start: load from Sheets
+  initPanel();
+});
+</script>
+</body>
+</html>
