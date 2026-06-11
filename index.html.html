@@ -1652,16 +1652,18 @@ async function initPanel() {
   var ov=document.getElementById('lo'); if(ov) ov.remove();
 }
 
-document.getElementById('fecha-hoy').textContent = new Date().toLocaleDateString('es-CL',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
-setMes(6);
-renderReuStats();
-renderFacturacion();
-renderPropuestasTable();
-renderProspectos();
-renderSemanal();
-renderConsolidado();
-// Start: load from Sheets
-initPanel();
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('fecha-hoy').textContent = new Date().toLocaleDateString('es-CL',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  setMes(6);
+  renderReuStats();
+  renderFacturacion();
+  renderPropuestasTable();
+  renderProspectos();
+  renderSemanal();
+  renderConsolidado();
+  // Start: load from Sheets
+  initPanel();
+});
 </script>
 </body>
 </html>
